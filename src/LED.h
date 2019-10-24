@@ -7,16 +7,16 @@
 //Class for holding LED step parameters
 class LED {
  public:
-    LED(uint8_t * intensities, uint16_t * time_intervals);
+    LED(uint8_t * intensities_p, uint16_t * timeIntervals_p);
 
     //Increments local time and retuns true if new phase with new intensity
-    bool update_get_intensity(uint8_t & intensity); 
+    bool updateGetIntensity(uint8_t & intensity_p); 
 private:
-    uint8_t * _intensities;
-    uint16_t * _time_intervals;
+    uint8_t * intensities;
+    uint16_t * timeIntervals;
 
-    uint8_t _phase;
-    uint16_t _phase_time;
+    uint8_t phase;
+    uint16_t phaseTime;
 };
 
 

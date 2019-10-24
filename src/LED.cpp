@@ -1,23 +1,24 @@
 #include "LED.h"
 
-LED::LED(uint8_t * intensities, uint16_t * time_intervals) {
-    _intensities = intensities;
-    _time_intervals = time_intervals;
-    _phase = 0;
-    _phase_time = 0;
+LED::LED(uint8_t * intensities_p, uint16_t * time_intervals_p) {
+    intensities = intensities_p;
+    timeIntervals = time_intervals_p;
+    phase = 0;
+    phaseTime = 0;
 }
 
 bool 
-LED::update_get_intensity(uint8_t & intensity) {
-    if(++_phase_time >= _time_intervals[_phase]) {
-        _phase_time = 0;
-        _phase++;
-        if(_phase > NUM_PHASES) {
-            _phase = 0;
+LED::updateGetIntensity(uint8_t & intensity_p) {
+    if(++phaseTime >= timeIntervals[phase]) {
+        phaseTime = 0;
+        phase++;
+        if(phase > NUM_PHASES) {
+            phase = 0;
         }
-        intensity = _intensities[_phase];
+        intensity_p = intensities[phase];
         return true;
     } else {
         return false;
     }
 }
+

@@ -42,10 +42,10 @@ void setBlue3_oldRed(uint16_t well, uint16_t *bright){
   tlc.setPWM(blue3Position, (uint16_t)((*bright)*float(3300.0000/4095.0000)));   //Set Red
 }
 
-void setAll(uint16_t well, uint16_t *bright){
-  setBlue1(well, bright);
-  setBlue2(well, bright);
-  setBlue3_oldRed(well, bright);
+bool newSecond = false;
+
+ISR(TIMER1_COMPA_vect){
+  newSecond = true;
 }
 
 
@@ -53,20 +53,39 @@ void setup() {
   Serial.begin(9600);
   tlc.begin();
 
+
+//Set up 1s interrupt timer
+  cli();//stop interrupts
+
+  //set timer1 interrupt at 1Hz
+  TCCR1A = 0;// set entire TCCR1A register to 0
+  TCCR1B = 0;// same for TCCR1B
+  TCNT1  = 0;//initialize counter value to 0
+  // set compare match register for 1hz increments
+  OCR1A = 15624;// = (16*10^6) / (1*1024) - 1 (must be <65536)
+  // turn on CTC mode
+  TCCR1B |= (1 << WGM12);
+  // Set CS10 and CS12 bits for 1024 prescaler
+  TCCR1B |= (1 << CS12) | (1 << CS10);  
+  // enable timer compare interrupt
+  TIMSK1 |= (1 << OCIE1A);
+
+  sei();
+
 }
 
 void loop() {
-  if(newSecound) {
-    //Write leds
+  if(newSecond) {
+    tlc.write();
     needLEDSetup = true;
   } else if(needLEDSetup) {
     needLEDSetup = false;
     for(uint8_t i = 0; i < NUM_LEDS; i++) {
       uint8_t intensity = 0;
-        if(leds[i].update_get_intensity(intensity)) {
-          setBlue1(i, (uint16_t)intensity);
-        }
+      if(leds[i].updateGetIntensity(intensity)) {
+        setBlue1(i, (uint16_t)intensity);
       }
+      
     }
   }
 }
