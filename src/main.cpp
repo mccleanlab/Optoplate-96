@@ -1,29 +1,22 @@
 #include <Arduino.h>
 #include "TLC5947_optoPlate.h"
+#include "experiment_config.h"
 #include "LED.h"
 
 #define NUM_LEDS 96
 
-
-//DO NOT CHANGE 
 //define number of LED drivers and assign microcontroller
-const uint8_t NUM_TLC5974 = 12; 
-const uint8_t data  = 4;
-const uint8_t clock = 5;
-const uint8_t latch = 6;
-const uint8_t oe  = 7;  // set to -1 to not use the enable pin (its optional)
+#define NUM_TLC5974 12 
+#define DATA_PIN 4
+#define CLK_PIN 5
+#define LATCH_PIN 6
+#define OUTPUT_EN 7  // set to -1 to not use the enable pin (its optional)
 
 //DO NOT CHANGE
 const int chanNum = 24*NUM_TLC5974; //number of channels
-Adafruit_TLC5947 tlc = Adafruit_TLC5947(NUM_TLC5974, clock, data, latch); //creates LED driver object
+Adafruit_TLC5947 tlc = Adafruit_TLC5947(NUM_TLC5974, CLK_PIN, DATA_PIN, LATCH_PIN); //creates LED driver object
 
 bool needLEDSetup = false;
-
-uint8_t l1[] = {1, 2, 3, 4, 5};
-uint16_t l2[] = {1, 2, 3, 4, 5};
-
-LED leds[] = {LED(l1, l2)}; 
-
 
 
 void setBlue1(uint16_t well, uint16_t bright){
@@ -52,9 +45,7 @@ ISR(TIMER1_COMPA_vect){
 void setup() {
   Serial.begin(9600);
   tlc.begin();
-
-
-//Set up 1s interrupt timer
+  //Set up 1s interrupt timer
   cli();//stop interrupts
 
   //set timer1 interrupt at 1Hz
@@ -71,7 +62,6 @@ void setup() {
   TIMSK1 |= (1 << OCIE1A);
 
   sei();
-
 }
 
 void loop() {
@@ -84,8 +74,7 @@ void loop() {
       uint8_t intensity = 0;
       if(leds[i].updateGetIntensity(intensity)) {
         setBlue1(i, (uint16_t)intensity);
-      }
-      
+      }      
     }
   }
 }
