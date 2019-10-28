@@ -1,49 +1,44 @@
-clear all; 
 
-led.intens = 0;
-led.duration = 0;
-phaseData = repmat(led,1,96);
-for i = (1:96)
-    phaseData(i).intens = randi([0, 255], [9,1]);
-    phaseData(i).duration = randi([0, 255], [9,1]);
-    
-end
- save('phaseData.mat', 'phaseData');
- 
  load('phaseData.mat')
+ if(size(phaseData(1).intensity,1) > 60)
+    error('The number of phases exceeds 60. Arduino Micro does not have enough storage space')
+ end
  fileID = fopen('../src/experiment_config.h','w');
  fprintf(fileID,'#ifndef _EXPERIMENT_CONFIG_H\n#define _EXPERIMENT_CONFIG_H\n\n');
- fprintf(fileID, '#define PHASE_NUMB %i\n', size(phaseData(1).intens,1));
+ fprintf(fileID, '#define PHASE_NUMB %i\n', size(phaseData(1).intensity,1));
  fprintf(fileID,'#include "LED.h"\n\n');
  
- fprintf(fileID, 'uint8_t intensities[][PHASE_NUMB] = {\n');
+ fprintf(fileID, 'const uint8_t intensities[][PHASE_NUMB] PROGMEM = {\n');
  
  for i = [1:96]
     fprintf(fileID, '\t{');
-    fprintf(fileID, '%i,',  phaseData(i).intens);
+    fprintf(fileID, '%4i,',  phaseData(i).intensity);
     fprintf(fileID, '},\n');
  end
  fprintf(fileID, '};\n\n');
  
-  fprintf(fileID, 'uint16_t durations[][PHASE_NUMB] = {\n');
+ fprintf(fileID, 'const uint16_t durations[][PHASE_NUMB] PROGMEM = {\n');
  
  for i = [1:96]
     fprintf(fileID, '\t{');
-    fprintf(fileID, '%i,',  phaseData(i).duration);
+    fprintf(fileID, '%6i,',  phaseData(i).duration);
     fprintf(fileID, '},\n');
  end
  fprintf(fileID, '};\n');
  
-   fprintf(fileID, 'LED leds[] = {\n');
+ fprintf(fileID, 'LED leds[] = {\n');
  
  for i = (1:96)
-    fprintf(fileID, '\tLED(intensities[%i], durations[%i]),\n', i, i);
+    fprintf(fileID, '\tLED(intensities[%i], durations[%i], %i),\n', i, i, size(phaseData(1).intensity,1));
  end
  fprintf(fileID, '};\n\n');
  
-  fprintf(fileID,'#endif\n');
+ fprintf(fileID,'#endif\n');
   
  fclose(fileID);
+ 
+ status = system('cd ../ & platformio run --target upload');
+ 
  
  
  
