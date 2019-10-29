@@ -3,14 +3,15 @@
 
 #include <Arduino.h>
 
-//Class for holding LED step parameters
+//Class for holding LED phase parameters
 class LED {
- public:
+    public:
     LED(const uint8_t * intensities_p, const uint16_t * durations_p, const uint8_t phasesNumb_p);
 
-    //Increments local time and retuns true if new phase with new intensity
+    //Increments LED phase time and retuns true if new phase and and updates intensity
     bool updateGetIntensity(uint8_t & intensity_p); 
-private:
+    
+    private:
     const  uint8_t * intensities;
     const uint16_t * durations;
 
@@ -18,6 +19,4 @@ private:
     uint16_t phaseTime;
     uint8_t phasesNumb;
 };
-
-
 #endif
