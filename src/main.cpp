@@ -45,7 +45,8 @@ ISR(TIMER1_COMPA_vect){
 void setup() {
   Serial.begin(9600);
   tlc.begin();
-  //Set up 1s interrupt timer
+
+  //Set up 1hz interrupt timer
   cli();//stop interrupts
 
   //set timer1 interrupt at 1Hz
@@ -68,6 +69,7 @@ void loop() {
   if(newSecond) {
     tlc.write();
     needLEDSetup = true;
+
   } else if(needLEDSetup) {
     needLEDSetup = false;
     for(uint8_t i = 0; i < NUM_LEDS; i++) {

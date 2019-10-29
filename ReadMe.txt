@@ -21,7 +21,7 @@ Installation:
 Use:
 
  Datastructure of experiment:
-	Create a .mat file call phaseData.mat with the following structure:
+	Create a phaseData.mat file in the folder named Matlab, with the following structure:
 		led.intensity = 0;
 		led.duration = 0;
 		phaseData = repmat(led,1,96);
@@ -29,7 +29,7 @@ Use:
     			phaseData(i).intensity = randi([0, 255], [59,1]); //Generate intensities here
     			phaseData(i).duration = randi([0, 2^16-1], [59,1]); //Generate duration of intensities here
     		end
- 		save('phaseData.mat', 'phaseData');
+ 		save('Path/To/Matlab/phaseData.mat', 'phaseData');
 		
 	Intensities must be a 8 bit unsigned integer from 0 to 255.
 	Duration in seconds for each intensity is specified in the corresponding duration.
