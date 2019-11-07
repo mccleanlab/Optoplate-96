@@ -20,7 +20,6 @@
 
 #include <Arduino.h>
 
-
 class Adafruit_TLC5947 {
  public:
   Adafruit_TLC5947(uint8_t n, uint8_t c, uint8_t d, uint8_t l);

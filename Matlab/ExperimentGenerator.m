@@ -6,7 +6,7 @@
  fileID = fopen('../src/experiment_config.h','w');
  fprintf(fileID,'#ifndef _EXPERIMENT_CONFIG_H\n#define _EXPERIMENT_CONFIG_H\n\n');
  fprintf(fileID, '#define PHASE_NUMB %i\n', size(phaseData(1).intensity,1));
- fprintf(fileID,'#include "LED.h"\n\n');
+ fprintf(fileID,'#include "LED.h"\n#include <EEPROM.h>\n\n');
  
  fprintf(fileID, 'const uint8_t intensities[][PHASE_NUMB] PROGMEM = {\n');
  
@@ -29,7 +29,7 @@
  fprintf(fileID, 'LED leds[] = {\n');
  
  for i = (1:96)
-    fprintf(fileID, '\tLED(intensities[%i], durations[%i], %i),\n', i, i, size(phaseData(1).intensity,1));
+    fprintf(fileID, '\tLED(intensities[%i], durations[%i], %i, EEPROM.read(%i)),\n', i-1, i-1, size(phaseData(1).intensity,1), i-1);
  end
  fprintf(fileID, '};\n\n');
  

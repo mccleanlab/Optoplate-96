@@ -2,6 +2,7 @@
 #include "TLC5947_optoPlate.h"
 #include "experiment_config.h"
 #include "LED.h"
+#include <EEPROM.h>
 
 #define NUM_LEDS 96
 
@@ -14,26 +15,16 @@
 
 //DO NOT CHANGE
 const int chanNum = 24*NUM_TLC5974; //number of channels
+
 Adafruit_TLC5947 tlc = Adafruit_TLC5947(NUM_TLC5974, CLK_PIN, DATA_PIN, LATCH_PIN); //creates LED driver object
 
 bool needLEDSetup = false;
 
-
-void setBlue1(uint16_t well, uint16_t bright){
-  uint16_t blue1Position = (uint16_t)((int)(well/12) + 8*(well%12));
-  tlc.setPWM(blue1Position, (uint16_t)((bright)*float(3300.0000/4095.0000)));   //Set Blue
-  Serial.println((uint16_t)((bright)*float(3300.0000/4095.0000)));
+void setLED(uint16_t well, uint16_t bright){
+  tlc.setPWM((uint16_t)((int)(well/12) + 8*(well%12)), bright*16); //Set Blue
+  tlc.setPWM((uint16_t)(well+192), bright*16);                     //Set Blue1
 }
 
-void setBlue2(uint16_t well, uint16_t *bright){
-  uint16_t blue2Position = (uint16_t)(well+192);
-  tlc.setPWM(blue2Position, *(bright));   //Set Far-red
-}
-
-void setBlue3_oldRed(uint16_t well, uint16_t *bright){
-  uint16_t blue3Position = (uint16_t)((int)(well/12) + 8*(well%12)+96);
-  tlc.setPWM(blue3Position, (uint16_t)((*bright)*float(3300.0000/4095.0000)));   //Set Red
-}
 
 bool newSecond = false;
 
@@ -45,7 +36,17 @@ ISR(TIMER1_COMPA_vect){
 void setup() {
   Serial.begin(9600);
   tlc.begin();
-
+  delay(1000);
+  for(uint8_t i = 0; i < NUM_LEDS; i++) {
+    EEPROM.write(i, i+1);
+    setLED(i, (uint16_t)leds[i].getIntensity());
+  }
+  if (OUTPUT_EN >= 0) {
+    pinMode(OUTPUT_EN, OUTPUT);
+    digitalWrite(OUTPUT_EN, HIGH);
+  }        
+  tlc.write();
+  
   //Set up 1hz interrupt timer
   cli();//stop interrupts
 
@@ -61,21 +62,23 @@ void setup() {
   TCCR1B |= (1 << CS12) | (1 << CS10);  
   // enable timer compare interrupt
   TIMSK1 |= (1 << OCIE1A);
-
   sei();
+  
 }
 
 void loop() {
   if(newSecond) {
     tlc.write();
     needLEDSetup = true;
+    newSecond = false;
 
   } else if(needLEDSetup) {
     needLEDSetup = false;
     for(uint8_t i = 0; i < NUM_LEDS; i++) {
       uint8_t intensity = 0;
       if(leds[i].updateGetIntensity(intensity)) {
-        setBlue1(i, (uint16_t)intensity);
+        Serial.println(intensity);
+        setLED(i, (uint16_t)intensity);
       }      
     }
   }
