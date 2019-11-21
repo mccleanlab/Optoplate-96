@@ -4,3 +4,4 @@
 .vscode/launch.json
 .vscode/ipch
 *.asv
+.vscode/extensions.json

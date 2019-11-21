@@ -1,27 +1,56 @@
 
- load('phaseData.mat')
- if(size(phaseData(1).intensity,1) > 60)
-    error('The number of phases exceeds 60. Arduino Micro does not have enough storage space')
- end
- fileID = fopen('../src/experiment_config.h','w');
- fprintf(fileID,'#ifndef _EXPERIMENT_CONFIG_H\n#define _EXPERIMENT_CONFIG_H\n\n');
- fprintf(fileID, '#define PHASE_NUMB %i\n', size(phaseData(1).intensity,1));
- fprintf(fileID,'#include "LED.h"\n#include <EEPROM.h>\n\n');
- 
- fprintf(fileID, 'const uint8_t intensities[][PHASE_NUMB] PROGMEM = {\n');
- 
- for i = [1:96]
+load('phaseData.mat')
+if(size(phaseData(1).intensity,1) > 14)
+error('The number of phases exceeds 14. Arduino Micro does not have enough storage space')
+end
+fileID = fopen('../src/experiment_config.h','w');
+
+fprintf(fileID,'/* This is an auto generated file.\nFind the generator in ../Matlab/ExperimentGenerator.*/\n\n');
+
+fprintf(fileID,'#ifndef _EXPERIMENT_CONFIG_H\n#define _EXPERIMENT_CONFIG_H\n\n');
+fprintf(fileID, '#define PHASE_NUMB %i\n', size(phaseData(1).intensity, 1));
+fprintf(fileID,'#include "LED.h"\n#include <Arduino.h>\n#include <EEPROM.h>\n\n');
+
+fprintf(fileID, 'const uint8_t intensities[][PHASE_NUMB] PROGMEM = {\n');
+for i = (1:96)
     fprintf(fileID, '\t{');
     fprintf(fileID, '%4i,',  phaseData(i).intensity);
+    fprintf(fileID, '},\n');
+end
+fprintf(fileID, '};\n\n');
+ 
+ 
+fprintf(fileID, 'const uint8_t periods[][PHASE_NUMB] PROGMEM = {\n');
+for i = (1:96)
+    fprintf(fileID, '\t{');
+    fprintf(fileID, '%4i,',  phaseData(i).periods);
     fprintf(fileID, '},\n');
  end
  fprintf(fileID, '};\n\n');
  
- fprintf(fileID, 'const uint16_t durations[][PHASE_NUMB] PROGMEM = {\n');
- 
- for i = [1:96]
+
+fprintf(fileID, 'const uint16_t offset[][PHASE_NUMB] PROGMEM = {\n');
+for i = (1:96)
     fprintf(fileID, '\t{');
-    fprintf(fileID, '%6i,',  phaseData(i).duration);
+    fprintf(fileID, '%6i,',  phaseData(i).offset);
+    fprintf(fileID, '},\n');
+end
+fprintf(fileID, '};\n');
+ 
+fprintf(fileID, 'const uint16_t tInterpulse[][PHASE_NUMB] PROGMEM = {\n');
+for i = (1:96)
+    fprintf(fileID, '\t{');
+    fprintf(fileID, '%6i,',  phaseData(i).tInterpulse);
+    fprintf(fileID, '},\n');
+ end
+ fprintf(fileID, '};\n');
+ 
+  
+  fprintf(fileID, 'const uint16_t tPulse[][PHASE_NUMB] PROGMEM = {\n');
+ 
+ for i = (1:96)
+    fprintf(fileID, '\t{');
+    fprintf(fileID, '%6i,',  phaseData(i).tPulse);
     fprintf(fileID, '},\n');
  end
  fprintf(fileID, '};\n');
@@ -29,8 +58,12 @@
  fprintf(fileID, 'LED leds[] = {\n');
  
  for i = (1:96)
-    fprintf(fileID, '\tLED(intensities[%i], durations[%i], %i, EEPROM.read(%i)),\n', i-1, i-1, size(phaseData(1).intensity,1), i-1);
+    fprintf(fileID, '\tLED(intensities[%i], periods[%i], offset[%i], tInterpulse[%i], tPulse[%i],  %i, EEPROM.read(%i)),\n', i-1, i-1, i-1, i-1, i-1, size(phaseData(i).intensity,1), i-1);
  end
+ 
+ 
+            
+            
  fprintf(fileID, '};\n\n');
  
  fprintf(fileID,'#endif\n');

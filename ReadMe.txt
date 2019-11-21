@@ -25,13 +25,19 @@ Use:
 		led.intensity = 0;
 		led.duration = 0;
 		phaseData = repmat(led,1,96);
+		width = 14;
+
 		for i = (1:96)
-    			phaseData(i).intensity = randi([0, 255], [59,1]); //Generate intensities here
-    			phaseData(i).duration = randi([0, 2^16-1], [59,1]); //Generate duration of intensities here
-    		end
- 		save('Path/To/Matlab/phaseData.mat', 'phaseData');
+			phaseData(i).intensity = ones([width, 1])*255;
+			phaseData(i).periods = ones([width, 1])*3;
+			phaseData(i).offset = ones([width, 1])*5;
+			phaseData(i).tInterpulse = ones([width, 1])*0;
+			phaseData(i).tPulse = ones([width, 1])*1;
+		end
+ 	save('phaseData.mat', 'phaseData');
 		
-	Intensities must be a 8 bit unsigned integer from 0 to 255.
+	Intensity must be a 8 bit unsigned integer from 0 to 255.
+	Durations must be a 8 bit unsigned integer from 0 to 255.
 	Duration in seconds for each intensity is specified in the corresponding duration.
 	Durations must be a 16 bit unsigned integer from 0 to 65535.
 	All intensities vectors and duration must be of equal length.

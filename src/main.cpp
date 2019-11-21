@@ -36,10 +36,10 @@ ISR(TIMER1_COMPA_vect){
 void setup() {
   Serial.begin(9600);
   tlc.begin();
-  delay(1000);
+  delay(100);
   for(uint8_t i = 0; i < NUM_LEDS; i++) {
-    EEPROM.write(i, i+1);
-    setLED(i, (uint16_t)leds[i].getIntensity());
+    EEPROM.write(i, 255);
+    setLED(i, 0);
   }
   if (OUTPUT_EN >= 0) {
     pinMode(OUTPUT_EN, OUTPUT);
@@ -76,10 +76,9 @@ void loop() {
     needLEDSetup = false;
     for(uint8_t i = 0; i < NUM_LEDS; i++) {
       uint8_t intensity = 0;
-      if(leds[i].updateGetIntensity(intensity)) {
-        Serial.println(intensity);
-        setLED(i, (uint16_t)intensity);
-      }      
+      leds[i].updateGetIntensity(intensity); 
+      setLED(i, intensity);     
     }
+    Serial.println("Done");
   }
 }
