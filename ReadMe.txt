@@ -37,12 +37,11 @@ Use:
  	save('phaseData.mat', 'phaseData');
 		
 	Intensity must be a 8 bit unsigned integer from 0 to 255.
-	Durations must be a 8 bit unsigned integer from 0 to 255.
-	Duration in seconds for each intensity is specified in the corresponding duration.
-	Durations must be a 16 bit unsigned integer from 0 to 65535.
-	All intensities vectors and duration must be of equal length.
-	If a LED comes to a phase with 0s in duration, that LED will turn off and remain off.
-	When a LED has gone trought all it's phases the LED loops back to phase 1
+	periods must be a 8 bit unsigned integer from 0 to 255.
+	offset is given in seconds and must be a 16 bit unsigned integer from 0 to 65535.
+	tInterpulse is given in seconds and must be a 16 bit unsigned integer from 0 to 65535.
+	tPulse is given in seconds and must be a 16 bit unsigned integer from 0 to 65535.
+	All vectors must be of equal length.
 
  Flash microcontroller:
 	Make sure the microcontroller is connected to the PC with a USB cable
