@@ -18,12 +18,13 @@ class LED {
    LED(   const uint8_t * intensities_p, const uint8_t * periods_p, 
             const uint16_t * offset_p, const uint16_t * tInterpulse_p,
             const uint16_t * tPulse_p,
-            const uint8_t phasesNumb_p, uint8_t caliNumb_p);
+            const uint8_t phasesNumb_p, 
+            uint8_t caliNumb1_p, uint8_t caliNumb2_p);
     //Increments LED phase time and retuns true if new phase and and updates intensity
-    void updateGetIntensity(uint8_t & intensity_p); 
+    void updateGetIntensity(uint8_t & intensity1_p, uint8_t & intensity2_p);
     
     
-    uint8_t getIntensity();
+    uint8_t getIntensity(uint8_t LEDindex);
 
     private:
     const uint8_t * intensities PROGMEM;
@@ -35,7 +36,8 @@ class LED {
     uint8_t phase;
     uint16_t phaseTime;
     uint8_t phasesNumb;
-    uint8_t caliNumb;
+    uint8_t caliNumb1;
+    uint8_t caliNumb2;
     uint8_t periodCount;
 
     LEDstate state;

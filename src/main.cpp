@@ -20,11 +20,18 @@ Adafruit_TLC5947 tlc = Adafruit_TLC5947(NUM_TLC5974, CLK_PIN, DATA_PIN, LATCH_PI
 
 bool needLEDSetup = false;
 
+void setLED1(uint16_t well, uint16_t bright){
+  tlc.setPWM((uint16_t)((int)(well/12) + 8*(well%12)), bright*16); //Set Blue1
+}
+void setLED2(uint16_t well, uint16_t bright){
+  tlc.setPWM((uint16_t)(well+192), bright*16);                     //Set Blue2
+}
+
+
 void setLED(uint16_t well, uint16_t bright){
   tlc.setPWM((uint16_t)((int)(well/12) + 8*(well%12)), bright*16); //Set Blue
   tlc.setPWM((uint16_t)(well+192), bright*16);                     //Set Blue1
 }
-
 
 bool newSecond = false;
 
@@ -34,12 +41,12 @@ ISR(TIMER1_COMPA_vect){
 
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
   tlc.begin();
   delay(100);
   for(uint8_t i = 0; i < NUM_LEDS; i++) {
-    EEPROM.write(i, 255);
-    setLED(i, 0);
+    setLED1(i, 0);
+    setLED2(i, 0);
   }
   if (OUTPUT_EN >= 0) {
     pinMode(OUTPUT_EN, OUTPUT);
@@ -74,10 +81,17 @@ void loop() {
 
   } else if(needLEDSetup) {
     needLEDSetup = false;
-    for(uint8_t i = 0; i < NUM_LEDS; i++) {
-      uint8_t intensity = 0;
-      leds[i].updateGetIntensity(intensity); 
-      setLED(i, intensity);     
+    uint8_t intensity1 = 0;
+    uint8_t intensity2 = 0;
+    for(uint16_t i = 0; i < NUM_LEDS; i++) {
+      intensity1 = 0;
+      intensity2 = 0;
+      leds[i].updateGetIntensity(intensity1, intensity2); 
+      intensity1 = 0;
+      intensity2 = 0;
+      //setLED1(i, 0);
+      //setLED2(i, 0); 
+      setLED(i, 2);
     }
     Serial.println("Done");
   }

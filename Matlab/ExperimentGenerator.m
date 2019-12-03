@@ -58,7 +58,7 @@ for i = (1:96)
  fprintf(fileID, 'LED leds[] = {\n');
  
  for i = (1:96)
-    fprintf(fileID, '\tLED(intensities[%i], periods[%i], offset[%i], tInterpulse[%i], tPulse[%i],  %i, EEPROM.read(%i)),\n', i-1, i-1, i-1, i-1, i-1, size(phaseData(i).intensity,1), i-1);
+    fprintf(fileID, '\tLED(intensities[%i], periods[%i], offset[%i], tInterpulse[%i], tPulse[%i],  %i, EEPROM.read(%i), EEPROM.read(%i)),\n', i-1, i-1, i-1, i-1, i-1, size(phaseData(i).intensity,1), (i-1)*2, (i-1)*2+1);
  end
  
  
