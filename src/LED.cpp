@@ -1,82 +1,85 @@
 #include "LED.h"
 
-LED::LED() {};
 
-void
-LED::init( const uint8_t * intensities_p, const uint8_t * periods_p, 
-            const uint16_t * offset_p, const uint16_t * tInterpulse_p,
-            const uint16_t * tPulse_p,
-            const uint8_t phasesNumb_p) {
-    intensities = intensities_p;
-    periods = periods_p;
-    offset = offset_p;
-    tInterpulse = tInterpulse_p;
-    tPulse = tPulse_p;
+uint8_t getIntensity(uint8_t index, uint8_t indexLED);
 
-    phase = 0;
-    phaseTime = 0;
-    state = OFFSET;
-    periodCount = 0;
-    phasesNumb = phasesNumb_p;
-    caliNumb[0] = 255;
-    caliNumb[1] = 255;
-}
 
-void
-LED::setCalibrationValue(uint8_t caliLED1, uint8_t caliLED2) {
-    caliNumb[0] = caliLED1;
-    caliNumb[1] = caliLED2;
+uint8_t phase[NUMB_LED];
+uint16_t phaseTime[NUMB_LED];
+uint8_t caliNumb[NUMB_LED][2];
+uint8_t periodCount[NUMB_LED];
+LEDstate state[NUMB_LED];
+
+
+void LEDinit() {
+    for(uint8_t i = 0; i < NUMB_LED; i++) {
+        phase[i] = 0;
+        phaseTime[i] = 0;
+        caliNumb[i][0] = EEPROM.read(i*2);
+        caliNumb[i][1] = EEPROM.read(i*2+1);
+        periodCount[i] = 0;
+
+        state[i] = OFFSET;
+    }
 }
 
 void 
-LED::updateGetIntensity(uint8_t & intensity_p) {
-    phaseTime++;
-    switch (state)
+LEDupdateGetIntensity(uint8_t index, uint8_t * intensity1_p,  uint8_t * intensity2_p) {
+    phaseTime[index]++;
+    switch (state[index])
     {
     case OFFSET:
+
         Serial.println("Offset");
-        if(phaseTime >= pgm_read_word_near(&(offset[phase]))) {
-            state = LED_HIGH;
-            intensity_p = getIntensity(0);
-            phaseTime = 0;
+        if(phaseTime[index] >= pgm_read_word_near(&(offset[index][phase[index]]))) {
+            state[index] = LED_HIGH;
+            *intensity1_p = getIntensity(index,0);
+            *intensity2_p = getIntensity(index,1);
+            phaseTime[index] = 0;
         } else {
-            intensity_p = 0;
+            *intensity1_p = 0;
+            *intensity2_p = 0;
         }
         break;
     case LED_HIGH:
         Serial.println("Led High");
-        if(phaseTime >= pgm_read_word_near(&(tPulse[phase]))) {
-            state = LED_LOW;
-            phaseTime = 0;
+        if(phaseTime[index] >= pgm_read_word_near(&(tPulse[index][phase[index]]))) {
+            state[index] = LED_LOW;
+            phaseTime[index] = 0;
         } else {
-            intensity_p = getIntensity(0);
+            *intensity1_p = getIntensity(index,0);
+            *intensity2_p = getIntensity(index,1);
         }
         break;
     case LED_LOW:
         Serial.println("Led low");
-         if(phaseTime >= pgm_read_word_near(&(tInterpulse[phase]))) {
-             periodCount++;
-             phaseTime = 0;
-             if(periodCount >= pgm_read_byte_near(&(periods[phase]))) {
-                 phase++;
-                 if(phase >= phasesNumb) {
-                    state = DONE;
+         if(phaseTime[index] >= pgm_read_word_near(&(tInterpulse[index][phase[index]]))) {
+             periodCount[index]++;
+             phaseTime[index] = 0;
+             if(periodCount[index] >= pgm_read_byte_near(&(periods[index][phase[index]]))) {
+                 phase[index]++;
+                 if(phase[index] >= PHASE_NUMB) {
+                    state[index] = DONE;
                  } else {
-                    state = OFFSET;
-                    periodCount = 0;
+                    state[index] = OFFSET;
+                    periodCount[index] = 0;
                  }
-                 intensity_p = 0;
+                *intensity1_p = 0;
+                *intensity2_p = 0;
              } else {
-                 state = LED_HIGH;
-                 intensity_p = getIntensity(0);
+                 state[index] = LED_HIGH;
+                 *intensity1_p = getIntensity(index, 0);
+                 *intensity2_p = getIntensity(index, 1);
              }
         } else {
-            intensity_p = 0;
+            *intensity1_p = 0;
+            *intensity2_p = 0;
         }
         break;
     case DONE:
         Serial.println("Led Done");
-        intensity_p = 0;
+        *intensity1_p = 0;
+        *intensity2_p = 0;
         break;
     
     default:
@@ -84,9 +87,7 @@ LED::updateGetIntensity(uint8_t & intensity_p) {
     }
 }
 
-
 uint8_t 
-LED::getIntensity(uint8_t indexLED) {
-    return (uint8_t) ((pgm_read_byte_near(&(intensities[phase]))/256.0) * caliNumb[indexLED]);
+getIntensity(uint8_t index, uint8_t indexLED) {
+    return (uint8_t) ((pgm_read_byte_near(&(intensities[index][phase[index]]))/256.0) * caliNumb[index][indexLED]);
 }
-

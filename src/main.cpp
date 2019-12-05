@@ -1,8 +1,9 @@
 #include <Arduino.h>
 #include "TLC5947_optoPlate.h"
-//#include "experiment_config.h"
+#include "experiment_config.h"
 #include "LED.h"
-#include <EEPROM.h>
+
+
 
 #define NUM_LEDS 96
 
@@ -20,9 +21,9 @@ Adafruit_TLC5947 tlc = Adafruit_TLC5947(NUM_TLC5974, CLK_PIN, DATA_PIN, LATCH_PI
 
 bool needLEDSetup = false;
 
-void setLED(uint16_t well, uint16_t bright){
-  tlc.setPWM((uint16_t)((int)(well/12) + 8*(well%12)), bright*16); //Set Blue
-  tlc.setPWM((uint16_t)(well+192), bright*16);                     //Set Blue1
+void setLED(uint16_t well, uint16_t bright1, uint16_t bright2){
+  tlc.setPWM((uint16_t)((int)(well/12) + 8*(well%12)), bright1*16); //Set Blue
+  tlc.setPWM((uint16_t)(well+192), bright2*16);                     //Set Blue1
 }
 
 
@@ -32,20 +33,18 @@ ISR(TIMER1_COMPA_vect){
   newSecond = true;
 }
 
-LED leds;
-
 
 void setup() {
-  for(uint8_t i = 0; i < NUM_LEDS; i++) {
-//    leds[i].init(intensities[i], periods[i], offset[i], tInterpulse[i], tPulse[i],  PHASE_NUMB);
-  }
+
+  LEDinit();
+  
   Serial.begin(9600);
 
   tlc.begin();
   delay(100);
 
   for(uint8_t i = 0; i < NUM_LEDS; i++) {
-    setLED(i, 0);
+    setLED(i, 0, 0);
   }
   if (OUTPUT_EN >= 0) {
     pinMode(OUTPUT_EN, OUTPUT);
@@ -80,12 +79,11 @@ void loop() {
   } else if(needLEDSetup) {
     needLEDSetup = false;
     for(uint8_t i = 0; i < NUM_LEDS; i++) {
-      uint8_t intensity = 10;
-//      leds[i].updateGetIntensity(intensity); 
-      setLED(i, (uint16_t) intensity);     
+      uint8_t intensity1 = 0;
+      uint8_t intensity2 = 0;
+      LEDupdateGetIntensity(i, &intensity1,  &intensity2);
+      setLED(i, (uint16_t) intensity1, (uint16_t) intensity2);     
     }
     Serial.println("Done");
-     Serial.print("The size of LED: ");
-  Serial.println((uint8_t) sizeof(LED));
   }
 }
