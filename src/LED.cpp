@@ -1,6 +1,9 @@
 #include "LED.h"
 
-LED::LED(   const uint8_t * intensities_p, const uint8_t * periods_p, 
+LED::LED() {};
+
+void
+LED::init( const uint8_t * intensities_p, const uint8_t * periods_p, 
             const uint16_t * offset_p, const uint16_t * tInterpulse_p,
             const uint16_t * tPulse_p,
             const uint8_t phasesNumb_p) {

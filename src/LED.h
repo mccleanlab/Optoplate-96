@@ -15,7 +15,9 @@ intensities_p, periods_p, offset_p, tInterpulse_p, tPulse_p must all be pointers
 */
 class LED {
     public:
-   LED(     const uint8_t * intensities_p, const uint8_t * periods_p, 
+    LED();
+    
+    void init(const uint8_t * intensities_p, const uint8_t * periods_p, 
             const uint16_t * offset_p, const uint16_t * tInterpulse_p,
             const uint16_t * tPulse_p,
             const uint8_t phasesNumb_p);

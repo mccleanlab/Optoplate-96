@@ -1,6 +1,6 @@
 #include <Arduino.h>
 #include "TLC5947_optoPlate.h"
-#include "experiment_config.h"
+//#include "experiment_config.h"
 #include "LED.h"
 #include <EEPROM.h>
 
@@ -32,13 +32,19 @@ ISR(TIMER1_COMPA_vect){
   newSecond = true;
 }
 
+LED leds;
+
 
 void setup() {
+  for(uint8_t i = 0; i < NUM_LEDS; i++) {
+//    leds[i].init(intensities[i], periods[i], offset[i], tInterpulse[i], tPulse[i],  PHASE_NUMB);
+  }
   Serial.begin(9600);
+
   tlc.begin();
   delay(100);
+
   for(uint8_t i = 0; i < NUM_LEDS; i++) {
-    EEPROM.write(i, 255);
     setLED(i, 0);
   }
   if (OUTPUT_EN >= 0) {
@@ -46,10 +52,9 @@ void setup() {
     digitalWrite(OUTPUT_EN, HIGH);
   }        
   tlc.write();
-  
+
   //Set up 1hz interrupt timer
   cli();//stop interrupts
-
   //set timer1 interrupt at 1Hz
   TCCR1A = 0;// set entire TCCR1A register to 0
   TCCR1B = 0;// same for TCCR1B
@@ -75,10 +80,12 @@ void loop() {
   } else if(needLEDSetup) {
     needLEDSetup = false;
     for(uint8_t i = 0; i < NUM_LEDS; i++) {
-      uint8_t intensity = 0;
-      leds[i].updateGetIntensity(intensity); 
-      setLED(i, intensity);     
+      uint8_t intensity = 10;
+//      leds[i].updateGetIntensity(intensity); 
+      setLED(i, (uint16_t) intensity);     
     }
     Serial.println("Done");
+     Serial.print("The size of LED: ");
+  Serial.println((uint8_t) sizeof(LED));
   }
 }
