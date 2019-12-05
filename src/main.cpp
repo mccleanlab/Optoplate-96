@@ -4,7 +4,7 @@
 #include "LED.h"
 #include <EEPROM.h>
 
-#define NUM_LEDS 96
+#define NUM_LEDS 80
 
 //define number of LED drivers and assign microcontroller
 #define NUM_TLC5974 12 
@@ -89,9 +89,8 @@ void loop() {
       leds[i].updateGetIntensity(intensity1, intensity2); 
       intensity1 = 0;
       intensity2 = 0;
-      //setLED1(i, 0);
-      //setLED2(i, 0); 
-      setLED(i, 2);
+      setLED1(i, 0);
+      setLED2(i, 0); 
     }
     Serial.println("Done");
   }

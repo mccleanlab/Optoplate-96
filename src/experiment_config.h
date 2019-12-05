@@ -592,12 +592,6 @@ LED leds[] = {
 	LED(intensities[87], periods[87], offset[87], tInterpulse[87], tPulse[87],  8, EEPROM.read(174), EEPROM.read(175)),
 	LED(intensities[88], periods[88], offset[88], tInterpulse[88], tPulse[88],  8, EEPROM.read(176), EEPROM.read(177)),
 	LED(intensities[89], periods[89], offset[89], tInterpulse[89], tPulse[89],  8, EEPROM.read(178), EEPROM.read(179)),
-	LED(intensities[90], periods[90], offset[90], tInterpulse[90], tPulse[90],  8, EEPROM.read(180), EEPROM.read(181)),
-	LED(intensities[91], periods[91], offset[91], tInterpulse[91], tPulse[91],  8, EEPROM.read(182), EEPROM.read(183)),
-	LED(intensities[92], periods[92], offset[92], tInterpulse[92], tPulse[92],  8, EEPROM.read(184), EEPROM.read(185)),
-	LED(intensities[93], periods[93], offset[93], tInterpulse[93], tPulse[93],  8, EEPROM.read(186), EEPROM.read(187)),
-	LED(intensities[94], periods[94], offset[94], tInterpulse[94], tPulse[94],  8, EEPROM.read(188), EEPROM.read(189)),
-	LED(intensities[95], periods[95], offset[95], tInterpulse[95], tPulse[95],  8, EEPROM.read(190), EEPROM.read(191)),
 };
 
 #endif
