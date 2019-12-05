@@ -84,6 +84,6 @@ LED::updateGetIntensity(uint8_t & intensity_p) {
 
 uint8_t 
 LED::getIntensity(uint8_t indexLED) {
-    return (uint8_t) (pgm_read_byte_near(&(intensities[phase]))/256.0 * caliNumb[indexLED]);
+    return (uint8_t) ((pgm_read_byte_near(&(intensities[phase]))/256.0) * caliNumb[indexLED]);
 }
 
