@@ -4,12 +4,12 @@ phaseData = repmat(led,1,96);
 
 
 for i = (1:96)
-    phaseData(i).intensity = ones([10, 1])*10;
+    phaseData(i).intensity = ones([10, 1])*1;
     phaseData(i).periods = ones([10, 1])*100;
-    phaseData(i).offset = ones([10, 1])*5;
+    phaseData(i).offset = ones([10, 1])*2;
     
     phaseData(i).tInterpulse = ones([10, 1])*3;
-    phaseData(i).tPulse = ones([10, 1])*1;
+    phaseData(i).tPulse = ones([10, 1])*1000;
 end
 
  save('phaseData.mat', 'phaseData');
