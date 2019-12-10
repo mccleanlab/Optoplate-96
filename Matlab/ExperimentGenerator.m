@@ -1,7 +1,7 @@
 
 load('phaseData.mat')
-if(size(phaseData(1).intensity,1) > 14)
-error('The number of phases exceeds 14. Arduino Micro does not have enough storage space')
+if(size(phaseData(1).intensity,1) > 25)
+error('The number of phases exceeds 25. Arduino Micro does not have enough storage space')
 end
 fileID = fopen('../src/experiment_config.h','w');
 
