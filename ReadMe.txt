@@ -21,6 +21,7 @@ Installation:
 Use:
 
  Datastructure of experiment:
+	The Calibration.m script must be run before the OptoPlate can be used.
 	Create a phaseData.mat file in the folder named Matlab, with the following structure:
 		led.intensity = 0;
 		led.periods = 0;
