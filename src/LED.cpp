@@ -1,7 +1,7 @@
 #include "LED.h"
 
 
-uint8_t getIntensity(uint8_t index, uint8_t indexLED);
+uint16_t getIntensity(uint8_t index, uint8_t indexLED);
 
 
 uint8_t phase[NUMB_LED];
@@ -24,7 +24,7 @@ void LEDinit() {
 }
 
 void 
-LEDupdateGetIntensity(uint8_t index, uint8_t * intensity1_p,  uint8_t * intensity2_p) {
+LEDupdateGetIntensity(uint8_t index, uint16_t * intensity1_p,  uint16_t * intensity2_p) {
     phaseTime[index]++;
     switch (state[index])
     {
@@ -87,7 +87,7 @@ LEDupdateGetIntensity(uint8_t index, uint8_t * intensity1_p,  uint8_t * intensit
     }
 }
 
-uint8_t 
+uint16_t 
 getIntensity(uint8_t index, uint8_t indexLED) {
-    return (uint8_t) ((pgm_read_byte_near(&(intensities[index][phase[index]]))/256.0) * caliNumb[index][indexLED]);
+    return (uint16_t) ((pgm_read_byte_near(&(intensities[index][phase[index]]))/16.0) * caliNumb[index][indexLED]);
 }

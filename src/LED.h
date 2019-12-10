@@ -13,7 +13,7 @@ typedef enum LEDstate_e{
 } LEDstate;
 
 void LEDinit();
-void LEDupdateGetIntensity(uint8_t index, uint8_t * intensity1_p,  uint8_t * intensity2_p);
+void LEDupdateGetIntensity(uint8_t index, uint16_t * intensity1_p,  uint16_t * intensity2_p);
 
 
 #endif
