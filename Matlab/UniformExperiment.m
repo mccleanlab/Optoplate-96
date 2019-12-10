@@ -8,7 +8,7 @@ phaseData = repmat(led,1,96);
 phases = 25;
 
 for i = (1:96)
-    phaseData(i).intensity = ones([phases, 1])*1;
+    phaseData(i).intensity = ones([phases, 1])*5;
     phaseData(i).periods = ones([phases, 1])*100;
     phaseData(i).offset = ones([phases, 1])*2;
     
