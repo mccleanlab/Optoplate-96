@@ -21,7 +21,7 @@ Installation:
 Use:
 
  Datastructure of experiment:
-	The Calibration.m script must be run before the OptoPlate can be used.
+	The Calibration.m script must be run so that the OptoPlate has been flashed  before the OptoPlate can be used.
 	Create a phaseData.mat file in the folder named Matlab, with the following structure:
 		led.intensity = 0;
 		led.periods = 0;
@@ -46,8 +46,8 @@ Use:
 	Intensity must contain 8 bit unsigned integers from 0 to 255.
 	Periods must contain 8 bit unsigned integers from 0 to 255.
 	Offset must contain 16 bit unsigned integers from 0 to 65535.
-	tInterpulse must contain 16 unsigned integers fro 1 to 65535.
-	tPulse must contain 16 unsigned integers fro 1 to 65535
+	tInterpulse must contain 16 unsigned integers fro 1 to 65535 and the unit is seconds.
+	tPulse must contain 16 unsigned integers fro 1 to 65535  and the unit is seconds.
 
 	When a LED has gone through all of its phases it will be shut off.
 
