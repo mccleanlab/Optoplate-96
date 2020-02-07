@@ -3,8 +3,3 @@
 .vscode/c_cpp_properties.json
 .vscode/launch.json
 .vscode/ipch
-*.asv
-.vscode/extensions.json
-Matlab/phaseData.mat
-Matlab/phaseData.mat
-Matlab/phaseData.mat
