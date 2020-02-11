@@ -4,7 +4,7 @@
 
 calibrationData = load([path file]);
 
-fileID = fopen('../src/calibration_config.h','w');
+fileID = fopen('arduino/src/calibration_config.h','w');
 
 fprintf(fileID,'/* This is an auto generated file.\nFind the generator in ../Matlab/Calibration.*/\n\n');
 
