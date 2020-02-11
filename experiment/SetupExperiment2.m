@@ -1,5 +1,4 @@
 import visualization.*
-
 led.intensity = 0; 
 led.periods = 0;
 led.offset = 0;
@@ -14,7 +13,7 @@ length = 1;
 for colum = 1:8
     for row = 1:12
         % Intensity of the LEDs in a well from 0 to 255
-        experimnet_data(colum, row).intensity = mod(row,2)*intens;
+        experimnet_data(colum, row).intensity = (1-mod(row+(colum-1)*11,2))*intens;
         % The number of periods as a interger from 1 to 65536
         experimnet_data(colum, row).periods = 1;
         % The number of periods as a interger from 1 to 65536
@@ -33,4 +32,5 @@ promt = 'Input experiment name:  ';
 user_entry = input(promt, 's');
 file_name = ['experiment_files/', date , '-', user_entry, '.mat'];
 save(file_name, 'experimnet_data');
+%%
 plotLedSelector(experimnet_data);
