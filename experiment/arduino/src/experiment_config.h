@@ -9,18 +9,6 @@ Find the generator in ../Matlab/ExperimentGenerator.*/
 #include <Arduino.h>
 
 const uint8_t intensities[][PHASE_NUMB] PROGMEM = {
-	{   0,},
-	{ 100,},
-	{   0,},
-	{ 100,},
-	{   0,},
-	{ 100,},
-	{   0,},
-	{ 100,},
-	{   0,},
-	{ 100,},
-	{   0,},
-	{ 100,},
 	{ 100,},
 	{   0,},
 	{ 100,},
@@ -105,6 +93,18 @@ const uint8_t intensities[][PHASE_NUMB] PROGMEM = {
 	{   0,},
 	{ 100,},
 	{   0,},
+	{   0,},
+	{ 100,},
+	{   0,},
+	{ 100,},
+	{   0,},
+	{ 100,},
+	{   0,},
+	{ 100,},
+	{   0,},
+	{ 100,},
+	{   0,},
+	{ 100,},
 };
 
 const uint8_t periods[][PHASE_NUMB] PROGMEM = {
