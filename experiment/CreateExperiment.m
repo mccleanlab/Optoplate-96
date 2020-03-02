@@ -1,4 +1,6 @@
+addpath('visualization');
 import visualization.*
+
 
 led.intensity = 0; 
 led.periods = 0;
