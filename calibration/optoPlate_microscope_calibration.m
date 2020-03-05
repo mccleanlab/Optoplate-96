@@ -1,6 +1,6 @@
 clearvars;clc; close all;
 %%
-amp_thresh = 0.5; % Fraction of max intensity threshold for segmenting wells
+amp_thresh = 0.25; % Fraction of max intensity threshold for segmenting wells
 min_peak_dist = 2;
 num_wells = 48;
 

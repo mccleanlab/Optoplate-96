@@ -16,7 +16,11 @@ length = 1;
 for colum = 1:8
     for row = 1:12
         % Intensity of the LEDs in a well from 0 to 255
-        experimnet_data(colum, row).intensity = mod(row,2)*intens;
+        if mod(colum, 2) == 1
+            experimnet_data(colum, row).intensity = ((row)/2)*20*(1-mod(row,2));
+        else
+            experimnet_data(colum, row).intensity = (((row+1)/2)*20+120)*mod(row,2); 
+        end
         % The number of periods as a interger from 1 to 65536
         experimnet_data(colum, row).periods = 1;
         % The number of periods as a interger from 1 to 65536
