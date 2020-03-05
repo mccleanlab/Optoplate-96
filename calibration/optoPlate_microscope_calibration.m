@@ -8,11 +8,9 @@ units = 'µW/cm^2'; % Only sets units labels on figures
 
 %% Specify used input_values in order listed in table LED (if applicable)
 input_values = [];
-input_values = repmat(20:20:240,4,1);
-input_values = reshape(input_values',48,1);
-
-%% Specify target output intensity (if applicable)
-output_intensity = 100; % Calculate input value needed to attain this output intensity
+% input_values = repmat(20:20:240,4,1);
+% input_values = reshape(input_values',48,1);
+% output_intensity = 145.8; % Calculate input value needed to attain this output intensity
 
 %% Load files to analyze
 [filenames, path] = uigetfile('.csv','Select files','Multiselect','On');
@@ -206,9 +204,6 @@ end
 
 
 %% Plot
-close all
-figure('Position',[100 100 1200 800])
-
 if cal_round==0 && ~isempty(input_values)
     % Plot and fit output intensity vs input values (if applicable)
     clear g; close all; figure('Position',[100 100 1200 800])
@@ -234,11 +229,27 @@ if cal_round==0 && ~isempty(input_values)
         disp(['Input = ' num2str(input)])
     end
     
+elseif cal_round==0 && isempty(input_values)
+    % Plot LED intensities
+    clear g; close all; figure('Position',[100 100 1200 800])
+%     ymax = 1.25*max(LED.intensity);
+ymax = 180
+    g = gramm('x',cellstr(LED.well),'y',LED.intensity,...
+        'color',cellstr(regexp(LED.well,'[a-zA-Z]*','match')),'subset',~isnan(LED.intensity));
+    g.facet_grid(LED.LED,[]);
+    g.geom_point();
+    g.set_title('LED intensities');
+    g.axe_property('XTickLabelRotation',60,'YLim',[0 ymax],'Xlim',[0 97]);
+    %     g.set_text_options('font','arial','interpreter','tex');
+    %     g.set_names('x','Well','y', ['Intensity (' units ')' newline 'mean ± std'],'Row','LED','Color','Row');
+    g.draw();
+    %     savefig(gcf,[path 'intensities_round_' num2str(cal_round)]);
+    
 elseif cal_round~=0
     % Create heatmap labels
     clear g; close all; figure('Position',[100 100 1200 800])
-    % ymax = 1.25*max(LED.intensity); 
-    ymax = 100
+    ymax = 1.25*max(LED.intensity);
+    %     ymax = 100
     rowlist = 'A':'H';
     column_list = string(cellfun(@(x) sprintf('%02d',x),num2cell(1:12),'UniformOutput',false));
     xlabeldisp(1:2:23) = string(1:12);
@@ -274,19 +285,17 @@ elseif cal_round~=0
 end
 
 %% Show optoPlate statistics
-if cal_round~=0
-    optoPlate_stats = table();
-    optoPlate_stats.cal_round = num2str(cal_round);
-    optoPlate_stats.mean = mean(LED.intensity);
-    optoPlate_stats.std = std(LED.intensity);
-    optoPlate_stats.CV = 100*optoPlate_stats.std/optoPlate_stats.mean;
-    optoPlate_stats.max = max(LED.intensity);
-    optoPlate_stats.min = min(LED.intensity);
-    
-    optoPlate_stats
-end
+optoPlate_stats = table();
+optoPlate_stats.cal_round = num2str(cal_round);
+optoPlate_stats.mean = mean(LED.intensity);
+optoPlate_stats.std = std(LED.intensity);
+optoPlate_stats.CV = 100*optoPlate_stats.std/optoPlate_stats.mean;
+optoPlate_stats.max = max(LED.intensity);
+optoPlate_stats.min = min(LED.intensity);
 
-%% Save measurements and statistics
+optoPlate_stats
+
+%% Save measurements, calibration values, and statistics
 if cal_round~=0
     measurements_out.round = cal_round;
     measurements_out.measurements = measurements;
@@ -298,4 +307,4 @@ if cal_round~=0
 end
 
 %% Clean up
-clearvars -except input_values output_intensity measurements measurements_raw LED model
+% clearvars -except input_values output_intensity measurements measurements_raw LED model
