@@ -39,7 +39,7 @@ g.draw();
 p = vartestn(LED.intensity,LED.condition,'TestType','LeveneAbsolute');
 
 %%
-measurements = load([pwd '\measurements\' 'measurements_round_1.mat']);
+measurements = load([pwd '\measurements\' 'aaa.mat']);
 measurements = measurements.measurements_out.measurements;
 measurements.label = strcat("Well set ", num2str(measurements.well_set)," LED ", num2str(measurements.LED));
 
@@ -58,7 +58,7 @@ g.draw();
 g.update('color',cellstr(measurements.well),'subset',~isnan(measurements.intensity))
 g.geom_point();
 g.set_color_options('map',cmap);
-g.axe_property('YLim',[0 100]);
+g.axe_property('YLim',[0 300]);
 g.set_names('x','Time','y','Intensity (µW/cm^2)','color','','row','');
 g.no_legend();
 g.draw(); hold on

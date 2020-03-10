@@ -1,15 +1,17 @@
 clearvars;clc; close all;
 %% Set parameters
-amp_thresh = 0.5; % Fraction of max intensity threshold for segmenting wells
+amp_thresh = 0.025; % Fraction of max intensity threshold for segmenting wells
 min_peak_dist = 2; % Minimum number of samples between peaks
 num_wells = 48; % Number of wells in each power meter measurements file
 unit_scale = 1E6; % Scale intensity values (eg, to convert from W to µW)
 units = 'µW/cm^2'; % Only sets units labels on figures
-fit_inputs_vs_outputs = true
+fit_inputs_vs_outputs = false;
+
 %% Specify used input_values in order listed in table LED (if applicable)
 input_values = [];
-input_values = repmat(20:20:240,4,1);
-input_values = reshape(input_values',48,1);
+input_values = 10:10:240; 
+% repmat(10:10:240,8,1);
+% input_values = reshape(input_values',96,1);
 output_intensity = 145.8; % Calculate input value needed to attain this output intensity
 
 %% Load files to analyze
@@ -235,7 +237,7 @@ elseif cal_round==0 && fit_inputs_vs_outputs==false
     clear g; close all; figure('Position',[100 100 1200 800])
 
     %     ymax = 1.25*max(LED.intensity);
-    ymax = 180;
+    ymax = 500;
 
     g = gramm('x',cellstr(LED.well),'y',LED.intensity,...
         'color',cellstr(regexp(LED.well,'[a-zA-Z]*','match')),'subset',~isnan(LED.intensity));
