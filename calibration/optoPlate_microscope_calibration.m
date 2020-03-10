@@ -9,7 +9,7 @@ fit_inputs_vs_outputs = false;
 
 %% Specify used input_values in order listed in table LED (if applicable)
 input_values = [];
-input_values = 10:10:240; 
+input_values = 10:10:240;
 % repmat(10:10:240,8,1);
 % input_values = reshape(input_values',96,1);
 output_intensity = 145.8; % Calculate input value needed to attain this output intensity
@@ -145,6 +145,44 @@ end
 measurements = vertcat(measurements{:});
 measurements = sortrows(measurements,{'LED','well'},{'Ascend','Ascend'});
 
+%% Plot measurements (for troubleshooting well IDs)
+if plot_measurements_raw==true
+    % measurements = load([pwd '\measurements\' 'aaa.mat']);
+    % measurements = measurements.measurements_out.measurements;
+    measurements.label = strcat("Well set ", num2str(measurements.well_set)," LED ", num2str(measurements.LED));
+    
+    cmap = hsv(12)*0.95;
+    idx = randperm(12);
+    cmap = cmap(idx,:); cmap = repmat(cmap,96/12,1);
+    
+    clear g; figure %close all
+    g = gramm('x',measurements.sample,'y',measurements.intensity_raw*1E6,'row',cellstr(measurements.label));
+    g.stat_summary();
+    g.set_color_options('map',[90 90 90]/255);
+    g.set_line_options('base_size',1);
+    g.set_names('x','Time','y','Intensity (µW/cm^2)','color','','row','');
+    g.draw();
+    
+    g.update('color',cellstr(measurements.well),'subset',~isnan(measurements.intensity))
+    g.geom_point();
+    g.set_color_options('map',cmap);
+    g.axe_property('YLim',[0 300]);
+    g.set_names('x','Time','y','Intensity (µW/cm^2)','color','','row','');
+    g.no_legend();
+    g.draw(); hold on
+    
+    measurements2label = measurements(~isnan(measurements.intensity),:);
+    well_label_y = grpstats(measurements2label,{'well','label'},'max','DataVars',{'intensity'});
+    well_label_x = grpstats(measurements2label,{'well','label'},'mean','DataVars',{'sample'});
+    measurements2label = join(well_label_x,well_label_y);
+    
+    g.update('x',measurements2label.mean_sample - 3,'y',measurements2label.max_intensity + 10,'row',cellstr(measurements2label.label),'label',measurements2label.well);
+    g.geom_label('FontSize',10);
+    g.set_color_options('map',[80 80 80]/255);
+    g.set_names('x','Time','y','Intensity (µW/cm^2)','color','','row','');
+    g.draw()
+end
+
 %% Calculate intensity of each LED
 LED = grpstats(measurements,{'well','LED'},{'nanmax'},'DataVars','intensity');
 LED.Properties.RowNames={}; LED.GroupCount = [];
@@ -204,7 +242,6 @@ elseif cal_round~=0 % Calculate calibration values
     save([path 'cal_round_' num2str(cal_round)],'cal');
 end
 
-
 %% Plot
 if cal_round==0 && fit_inputs_vs_outputs==true
     % Plot and fit output intensity vs input values (if applicable)
@@ -235,10 +272,10 @@ if cal_round==0 && fit_inputs_vs_outputs==true
 elseif cal_round==0 && fit_inputs_vs_outputs==false
     % Plot LED intensities
     clear g; close all; figure('Position',[100 100 1200 800])
-
+    
     %     ymax = 1.25*max(LED.intensity);
     ymax = 500;
-
+    
     g = gramm('x',cellstr(LED.well),'y',LED.intensity,...
         'color',cellstr(regexp(LED.well,'[a-zA-Z]*','match')),'subset',~isnan(LED.intensity));
     g.facet_grid(LED.LED,[]);
