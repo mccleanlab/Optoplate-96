@@ -1,18 +1,11 @@
-clearvars;clc; close all;
+clearvars; clc; close all;
 %% Set parameters
 amp_thresh = 0.025; % Fraction of max intensity threshold for segmenting wells
 min_peak_dist = 2; % Minimum number of samples between peaks
 num_wells = 48; % Number of wells in each power meter measurements file
 unit_scale = 1E6; % Scale intensity values (eg, to convert from W to µW)
 units = 'µW/cm^2'; % Only sets units labels on figures
-fit_inputs_vs_outputs = false;
-
-%% Specify used input_values in order listed in table LED (if applicable)
-input_values = [];
-input_values = 10:10:240;
-% repmat(10:10:240,8,1);
-% input_values = reshape(input_values',96,1);
-output_intensity = 145.8; % Calculate input value needed to attain this output intensity
+plot_measurements_raw = true;
 
 %% Load files to analyze
 [filenames, path] = uigetfile('.csv','Select files','Multiselect','On');
@@ -147,15 +140,13 @@ measurements = sortrows(measurements,{'LED','well'},{'Ascend','Ascend'});
 
 %% Plot measurements (for troubleshooting well IDs)
 if plot_measurements_raw==true
-    % measurements = load([pwd '\measurements\' 'aaa.mat']);
-    % measurements = measurements.measurements_out.measurements;
     measurements.label = strcat("Well set ", num2str(measurements.well_set)," LED ", num2str(measurements.LED));
     
     cmap = hsv(12)*0.95;
     idx = randperm(12);
     cmap = cmap(idx,:); cmap = repmat(cmap,96/12,1);
     
-    clear g; figure %close all
+    clear g; figure
     g = gramm('x',measurements.sample,'y',measurements.intensity_raw*1E6,'row',cellstr(measurements.label));
     g.stat_summary();
     g.set_color_options('map',[90 90 90]/255);
@@ -189,11 +180,7 @@ LED.Properties.RowNames={}; LED.GroupCount = [];
 idx = contains(LED.Properties.VariableNames,'intensity');
 LED.Properties.VariableNames(idx) = {'intensity'};
 
-if cal_round==0 && fit_inputs_vs_outputs==true
-    
-    LED.input_values = input_values;
-    
-elseif cal_round~=0 % Calculate calibration values
+if cal_round~=0 % Calculate calibration values
     
     % Interleave LED intensities following 96 well layout
     maxCal = 255;
@@ -206,7 +193,6 @@ elseif cal_round~=0 % Calculate calibration values
     intensities_display(1:2:191) = intensities(:,1);
     intensities_display(2:2:192) = intensities(:,2);
     intensities_display = reshape(intensities_display,24,8)';
-    intensities_display = intensities_display;
     
     % Scale intensities by calibration values from previous round (if applicable)
     if cal_round == 1
@@ -243,38 +229,11 @@ elseif cal_round~=0 % Calculate calibration values
 end
 
 %% Plot
-if cal_round==0 && fit_inputs_vs_outputs==true
-    % Plot and fit output intensity vs input values (if applicable)
-    clear g; close all; figure('Position',[100 100 1200 800])
-    g = gramm('x',LED.input_values,'y',LED.intensity,'subset',~isnan(LED.intensity));
-    g.stat_summary('type','std','geom',{'point','black_errorbar'});
-    g.set_title('Intensity vs input value');
-    g.set_names('x','Input value','y', ['Output intensity (' units ')'  newline 'mean ± std']);
-    g.set_text_options('font','arial','interpreter','tex')
-    g.stat_fit('fun',@(m,x)m*x,'StartPoint',1)
-    g.draw(); clc
-    savefig(gcf,[path 'output_intensity_vs_input_value']);
-    
-    model = g.results.stat_fit.model;
-    m = g.results.stat_fit.model.m;
-    
-    % Calculate input value needed to attain target output intensity
-    syms y(x)
-    y(x) = m*x;
-    input = round(double(solve(y==output_intensity, x)));
-    
-    if input<0 || input>255
-        disp(['Input = ' num2str(input) ' (out of bounds)'])
-    else
-        disp(['Input = ' num2str(input)])
-    end
-    
-elseif cal_round==0 && fit_inputs_vs_outputs==false
+if cal_round==0
     % Plot LED intensities
-    clear g; close all; figure('Position',[100 100 1200 800])
+    clear g; figure('Position',[100 100 1200 800])
     
-    %     ymax = 1.25*max(LED.intensity);
-    ymax = 500;
+    ymax = 1.25*max(LED.intensity);
     
     g = gramm('x',cellstr(LED.well),'y',LED.intensity,...
         'color',cellstr(regexp(LED.well,'[a-zA-Z]*','match')),'subset',~isnan(LED.intensity));
@@ -286,7 +245,7 @@ elseif cal_round==0 && fit_inputs_vs_outputs==false
     
 elseif cal_round~=0
     % Create heatmap labels
-    clear g; close all; figure('Position',[100 100 1200 800])
+    clear g; figure('Position',[100 100 1200 800])
     ymax = 1.25*max(LED.intensity);
     %     ymax = 100
     rowlist = 'A':'H';
@@ -335,7 +294,6 @@ optoPlate_stats.min = min(LED.intensity);
 optoPlate_stats
 
 %% Save measurements, calibration values, and statistics
-
 measurements_out.round = cal_round;
 measurements_out.measurements = measurements;
 measurements_out.LED = LED;
