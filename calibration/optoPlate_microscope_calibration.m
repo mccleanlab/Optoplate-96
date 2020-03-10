@@ -1,6 +1,6 @@
 clearvars;clc; close all;
 %% Set parameters
-amp_thresh = 0.05; % Fraction of max intensity threshold for segmenting wells
+amp_thresh = 0.5; % Fraction of max intensity threshold for segmenting wells
 min_peak_dist = 2; % Minimum number of samples between peaks
 num_wells = 48; % Number of wells in each power meter measurements file
 unit_scale = 1E6; % Scale intensity values (eg, to convert from W to µW)
@@ -99,7 +99,7 @@ for f = 1:nFiles
     
     % Find and count peaks in masked signal to identify wells
     [pks, locs, width] = findpeaks(intensity_binary,'NPeaks',num_wells,'MinPeakDistance',min_peak_dist); % Find peaks from binary
-    locs = locs + round(width/2); % Center peaks
+    locs = locs + floor(width/2); % Center peaks
     [val,idx] = min(abs(time-locs));
     well_idx = time(idx)';
     
@@ -241,10 +241,7 @@ elseif cal_round==0 && fit_inputs_vs_outputs==false
     g.geom_point();
     g.set_title('LED intensities');
     g.axe_property('XTickLabelRotation',60,'YLim',[0 ymax],'Xlim',[0 97]);
-    %     g.set_text_options('font','arial','interpreter','tex');
-    %     g.set_names('x','Well','y', ['Intensity (' units ')' newline 'mean ± std'],'Row','LED','Color','Row');
     g.draw();
-    %     savefig(gcf,[path 'intensities_round_' num2str(cal_round)]);
     
 elseif cal_round~=0
     % Create heatmap labels
