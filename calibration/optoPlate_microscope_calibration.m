@@ -283,7 +283,7 @@ elseif cal_round~=0
 end
 
 %% Show optoPlate statistics
-optoPlate_stats = table();
+optoPlate_stats = table();.
 optoPlate_stats.cal_round = num2str(cal_round);
 optoPlate_stats.mean = mean(LED.intensity);
 optoPlate_stats.std = std(LED.intensity);
