@@ -1,8 +1,10 @@
 #include <Arduino.h>
+
 #include "TLC5947_optoPlate.h"
 #include "experiment_config.h"
-#include "LED.h"
+#include "LedStateMachine.h"
 #include "TinyFrame.h"
+#include "TF_messages.h"
 
 #define NUM_LEDS 96
 
@@ -32,15 +34,49 @@ void setLED(uint16_t well, uint16_t bright1, uint16_t bright2)
 TinyFrame tf_s;
 #define tf  &tf_s
 
-void TF_WriteImpl(TinyFrame *tf, const uint8_t *buff, uint32_t len)
+
+/** An example listener function */
+TF_Result myListener(TinyFrame *tf_p, TF_Msg *msgIn)
+{   
+    uint8_t data = msgIn->data[0] + 2;
+    TF_Msg msg;
+    TF_ClearMsg(&msg);
+    msg.type = 0x22;
+    msg.data = &data;
+    msg.len = 1;
+    TF_Send(tf, &msg);
+    return TF_STAY;
+}
+
+TF_Result enableCmdHandler(TinyFrame *tf_p, TF_Msg *msgIn)
+{
+  uint8_t LEDindex = msgIn->data[0];
+  LEDenable(LEDindex);
+  tlc.write();
+  return TF_STAY;
+}
+
+TF_Result disableCmdHandler(TinyFrame *tf_p, TF_Msg *msgIn)
+{
+  uint8_t LEDindex = msgIn->data[0];
+  LEDdisable(LEDindex);
+  tlc.write();
+  return TF_STAY;
+}
+
+/**
+ * This function should be defined in the application code.
+ * It implements the lowest layer - sending bytes to UART (or other)
+ */
+void TF_WriteImpl(TinyFrame *tf_p, const uint8_t *buff, uint32_t len)
 {
   Serial.write(buff, len);
 }
 
+
+
 // ------------------------------------------------------------------------
 
-// Keep track of weather the LEDs have updated their values
-bool needLEDSetup = false;
 // Goes true every second so that the LEDs will be flashed
 bool newSecond = false;
 
@@ -66,7 +102,8 @@ void setup()
   TF_InitStatic(tf, TF_SLAVE);
 
   // Listen for incoming messages
-  TF_AddGenericListener(tf, myListener);
+  TF_AddTypeListener(tf, TF_ENABLE_CMD, enableCmdHandler);
+  TF_AddTypeListener(tf, TF_DISABLE_CMD, disableCmdHandler);
 
   // Set all the LED intensity to zero
   for (uint8_t i = 0; i < NUM_LEDS; i++)
@@ -102,14 +139,6 @@ void loop()
   if (newSecond)
   {
     // Set new values on LEDs
-    tlc.write();
-    needLEDSetup = true;
-    newSecond = false;
-  }
-  else if (needLEDSetup)
-  {
-    // Prepare values for next second
-    needLEDSetup = false;
     for (uint8_t i = 0; i < NUM_LEDS; i++)
     {
       uint16_t intensity1 = 0;
@@ -117,6 +146,8 @@ void loop()
       LEDupdateGetIntensity(i, &intensity1, &intensity2);
       setLED(i, intensity1, intensity2);
     }
+    tlc.write();
+    newSecond = false;
   }
   // Read Serial and update the TinyFrame listener
   while(Serial.available() > 0) {

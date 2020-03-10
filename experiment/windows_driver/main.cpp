@@ -3,7 +3,7 @@
 #include <string.h>
 #include "TinyFrame.h"
 #include "utilities/utils.h"
-
+#include "TF_messages.h"
 
 void initSerial(HANDLE & hComm, char * ComPortName);
 void readSerial(HANDLE & hComm, char data[255], int & dLength);
@@ -12,28 +12,6 @@ void closeSerial(HANDLE & hComm);
 
 
 HANDLE hComm;                          // Handle to the Serial port
-/*
-	int main(void)
-		{
-			HANDLE hComm;                          // Handle to the Serial port
-      char * portName = "COM5";
-      initSerial(hComm, portName);
-
-      char data[255];
-
-      int dLength = 0;
-      char text[] = "Hemmelig melding!";
-      for(int i = 0; i < 10; i++) {
-        sendSerial(hComm, text, sizeof(text));
-        readSerial(hComm, data, dLength);
-        for(int j = 0; j < dLength; j++) {
-          printf("\n recived: %c ", data[j]);
-        }
-      }
-     closeSerial(hComm);
-      return 0;
-		}//End of Main()
-*/
 
 TinyFrame *demo_tf;
 bool stopReading;
@@ -64,6 +42,24 @@ TF_Result testIdListener(TinyFrame *tf, TF_Msg *msg)
 }
 
 
+void disableLED(uint8_t LEDindex) {
+    TF_Msg msg;
+    TF_ClearMsg(&msg);
+    msg.type = TF_DISABLE_CMD;
+    msg.data = &LEDindex;
+    msg.len = 1;
+    TF_Send(demo_tf, &msg);
+}
+
+
+void enableLED(uint8_t LEDindex) {
+    TF_Msg msg;
+    TF_ClearMsg(&msg);
+    msg.type = TF_ENABLE_CMD;
+    msg.data = &LEDindex;
+    msg.len = 1;
+    TF_Send(demo_tf, &msg);
+}
 
 int main(void)
 {
@@ -79,53 +75,15 @@ int main(void)
     demo_tf  = TF_Init(TF_MASTER); // 1 = master, 0 = slave
     TF_AddGenericListener(demo_tf, myListener);
 
-    TF_ClearMsg(&msg);
-    msg.type = 0x22;
-    msg.data = (pu8) "A";
-    msg.len = 1;
-    TF_Send(demo_tf, &msg);
-    readSerial(hComm, data, dLength);
-    TF_Accept(demo_tf, (uint8_t *)data, dLength);
-    
-/*
-    msg.type = 0x33;
-    msg.data = (pu8) longstr;
-    msg.len = (TF_LEN) (strlen(longstr) + 1); // add the null byte
-    TF_Send(demo_tf, &msg);
-
-    readSerial(hComm, data, dLength);
-    TF_Accept(demo_tf, (uint8_t *)data, dLength);
-
-
-    msg.type = 0x44;
-    msg.data = (pu8) "Hello2";
-    msg.len = 7;
-    TF_Send(demo_tf, &msg);
-
-    readSerial(hComm, data, dLength);
-    TF_Accept(demo_tf, (uint8_t *)data, dLength);
-
-    msg.len = 0;
-    msg.type = 0x77;
-    TF_Query(demo_tf, &msg, testIdListener, 0);
-
-    readSerial(hComm, data, dLength);
-    TF_Accept(demo_tf, (uint8_t *)data, dLength);
-    
-    printf("This should fail:\n");
-    
-    // test checksums are tested
-    do_corrupt = true;    
-    msg.type = 0x44;
-    msg.data = (pu8) "Hello2";
-    msg.len = 7;
-    TF_Send(demo_tf, &msg);
-
-    readSerial(hComm, data, dLength);
-    TF_Accept(demo_tf, (uint8_t *)data, dLength);
-*/
+    for(uint8_t i = 0; i < 96; i++) {
+      disableLED(i);
+      Sleep( 1000 );
+      enableLED(i);
+      Sleep( 1000 );
+    }
     closeSerial(hComm);
 }
+
 
 void sendSerial(HANDLE  & hComm, char data[255], int dLength) {
     BOOL  Status;                          // Status of the various operations 

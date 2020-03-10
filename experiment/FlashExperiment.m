@@ -14,7 +14,7 @@ fprintf(fileID,'/* This is an auto generated file.\nFind the generator in ../Mat
 
 fprintf(fileID,'#ifndef _EXPERIMENT_CONFIG_H\n#define _EXPERIMENT_CONFIG_H\n\n');
 fprintf(fileID, '#define PHASE_NUMB %i\n', size(experimnet_data(1,1).intensity, 1));
-fprintf(fileID,'#include "LED.h"\n#include <Arduino.h>\n\n');
+fprintf(fileID,'#include "LedStateMachine.h"\n#include <Arduino.h>\n\n');
 
 fprintf(fileID, 'const uint8_t intensities[][PHASE_NUMB] PROGMEM = {\n');
 for i = (1:96)
