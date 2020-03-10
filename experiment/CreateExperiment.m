@@ -14,7 +14,7 @@ intens = 100;
 
 experiment_data = repmat(led,8,12);
 length = 1;
-checker = 1;
+checker = 2;
 % Loop through the leds
 for row = 1:8
     for column = 1:12
@@ -25,13 +25,13 @@ for row = 1:8
             if mod(row, 2) == 1
                 experiment_data(row, column).intensity = ((column)/2)*20*(1-mod(column,2));
             else
-                experiment_data(row, column).intensity = (((column+1)/2)*20+120)*mod(column,2); 
+                experiment_data(row, column).intensity = (((column)/2)*20+120)*mod(column,2); 
             end
         else
             if mod(row, 2) == 1
                 experiment_data(row, column).intensity = ((column)/2)*20*(mod(column,2));
             else
-                experiment_data(row, column).intensity = (((column+1)/2)*20+100)*(1-mod(column,2)); 
+                experiment_data(row, column).intensity = (((column)/2)*20+120)*(1-mod(column,2)); 
             end
         end
         % The number of periods as a interger from 1 to 65536
