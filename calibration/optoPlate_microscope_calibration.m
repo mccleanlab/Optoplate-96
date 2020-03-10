@@ -232,8 +232,8 @@ if cal_round==0 && ~isempty(input_values)
 elseif cal_round==0 && isempty(input_values)
     % Plot LED intensities
     clear g; close all; figure('Position',[100 100 1200 800])
-%     ymax = 1.25*max(LED.intensity);
-ymax = 180
+    %     ymax = 1.25*max(LED.intensity);
+    ymax = 180
     g = gramm('x',cellstr(LED.well),'y',LED.intensity,...
         'color',cellstr(regexp(LED.well,'[a-zA-Z]*','match')),'subset',~isnan(LED.intensity));
     g.facet_grid(LED.LED,[]);
