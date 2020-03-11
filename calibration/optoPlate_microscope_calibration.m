@@ -254,7 +254,7 @@ elseif cal_round~=0
     % Create heatmap labels
     clear g; figure('Position',[100 100 1200 800])
 %     ymax = 1.25*max(LED.intensity);
-        ymax = 120;
+        ymax = 250;
     rowlist = 'A':'H';
     column_list = string(cellfun(@(x) sprintf('%02d',x),num2cell(1:12),'UniformOutput',false));
     xlabeldisp(1:2:23) = string(1:12);
