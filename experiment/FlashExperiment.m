@@ -1,3 +1,4 @@
+clearvars; clc
 
 [file, path] = uigetfile('experiment_files/*.mat','Select LED pattern data');
 

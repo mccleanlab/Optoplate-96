@@ -89,21 +89,27 @@ for f = 1:nFiles
     
     % Create binary intensity signal for peak finding
     npad = 5;
-    intensity_binary = zeros(length(intensity) + npad,1); % Zero pad end of binary signal (helps if final measurement is bright)
+    intensity_binary = zeros(length(intensity),1);
     intensity_binary(intensity>0) = 1;
+    if intensity_binary(end)>amp_thresh
+        intensity_binary(end-1:end) = 0;
+    end
+    
+    %     figure; plot(time,intensity_binary)
     
     % Find and count peaks in masked signal to identify wells
-    [pks, locs, width] = findpeaks(intensity_binary,'NPeaks',num_wells,'MinPeakDistance',min_peak_dist); % Find peaks from binary
+    [pks, locs, width] = findpeaks(intensity_binary,'NPeaks',num_wells,'MinPeakDistance',min_peak_dist,'MinPeakProminence',1); % Find peaks from binary
     locs = locs + floor(width/2); % Center peaks
     [val,idx] = min(abs(time-locs));
     well_idx = time(idx)';
+    
     
     % Show warning if incorrect number of wells found
     if numel(pks)~=num_wells
         disp(['Warning: ' num2str(numel(pks)) ' peaks detected'])
     end
     
-    intensity_binary = intensity_binary(1:end-npad);
+    %     intensity_binary = intensity_binary(1:end-npad);
     
     % Calculate intensities for each identified well (excludes outliers)
     for j = 1:num_wells
@@ -283,7 +289,7 @@ elseif cal_round~=0
 end
 
 %% Show optoPlate statistics
-optoPlate_stats = table();.
+optoPlate_stats = table();
 optoPlate_stats.cal_round = num2str(cal_round);
 optoPlate_stats.mean = mean(LED.intensity);
 optoPlate_stats.std = std(LED.intensity);

@@ -4,7 +4,7 @@ input_values = 10:10:240;
 input_values = reshape(input_values',12,2)';
 input_values =  repmat(input_values,4,1);
 input_values = reshape(input_values',96,1);
-output_intensity = 145.8; % Calculate input value needed to attain this output intensity
+output_intensity = 181.51; % Calculate input value needed to attain this output intensity
 
 %% Plot and fit output intensity vs input values (if applicable)
 clear g; close all; figure('Position',[100 100 1200 800])
@@ -26,8 +26,10 @@ syms y(x)
 y(x) = m*x;
 input = round(double(solve(y==output_intensity, x)));
 
+disp(model)
+
 if input<0 || input>255
-    disp(['Input = ' num2str(input) ' (out of bounds)'])
+    disp(['input_value = ' num2str(input) ' (out of bounds)'])
 else
-    disp(['Input = ' num2str(input)])
+    disp(['For output_intensity = ' num2str(output_intensity) ', input_value = ' num2str(input)])
 end
