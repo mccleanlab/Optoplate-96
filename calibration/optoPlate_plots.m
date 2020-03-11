@@ -4,11 +4,11 @@ LED_round_1 = load([pwd '\measurements\' 'measurements_round_1.mat']);
 LED_round_1 = LED_round_1.measurements_out.LED;
 LED_round_1.round(:,1) = 1;
 
-LED_round_3 = load([pwd '\measurements\' 'measurements_round_3.mat']);
-LED_round_3 = LED_round_3.measurements_out.LED;
-LED_round_3.round(:,1) = 3;
+LED_round_2 = load([pwd '\measurements\' 'measurements_round_2.mat']);
+LED_round_2 = LED_round_2.measurements_out.LED;
+LED_round_2.round(:,1) = 2;
 
-LED = [LED_round_1; LED_round_3];
+LED = [LED_round_1; LED_round_2];
 
 clear g; close all
 g = gramm('x',LED.intensity,'color',LED.round);
@@ -29,14 +29,15 @@ LED_calibrated.condition(:,1) = "Calibrated";
 LED = [LED_uncalibrated; LED_calibrated];
 
 clear g; close all
-g = gramm('x',cellstr(LED.condition),'y',LED.intensity);
+g = gramm('x',cellstr(LED.condition),'y',LED.intensity,'color',cellstr(LED.condition));
+g.set_order_options('x',0);
 g.stat_boxplot();
 g.set_names('x','','y','Intensity (µW/cm^2)','color','Round');
 g.set_text_options('font','arial','interpreter','tex');
 % g.axe_property('YLim',[0 200]);
 g.draw();
 
-p = vartestn(LED.intensity,LED.condition,'TestType','LeveneAbsolute');
+p = vartestn(LED.intensity,LED.condition,'TestType','LeveneAbsolute')
 
 %%
 measurements = load([pwd '\measurements\' 'aaa.mat']);
