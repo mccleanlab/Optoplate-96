@@ -10,7 +10,7 @@ led.offset = 0;
 led.t_interpulse = 0;
 led.t_pulse = 0;
 
-intens = 122;
+intens = 118;
 
 experiment_data = repmat(led,8,12);
 length = 1;
