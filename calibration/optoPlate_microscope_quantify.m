@@ -13,8 +13,10 @@ g = gramm('x',LED.input_values,'y',LED.intensity,'subset',~isnan(LED.intensity))
 g.stat_summary('type','std','geom',{'point','black_errorbar'});
 g.set_title('Intensity vs input value');
 g.set_names('x','Input value','y', ['Output intensity (' units ')'  newline 'mean ± std']);
-g.set_text_options('font','arial','interpreter','tex')
-g.stat_fit('fun',@(m,x)m*x,'StartPoint',1)
+g.set_text_options('font','arial','interpreter','tex','base_size',12);
+g.stat_fit('fun',@(m,x)m*x,'StartPoint',1,'fullrange',true);
+g.axe_property('XLim',[0 255]);
+g.set_color_options('map',[0 190 210]/255);
 g.draw(); clc
 savefig(gcf,[path 'output_intensity_vs_input_value']);
 

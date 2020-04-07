@@ -1,10 +1,10 @@
 clearvars; clc; close all
 %%
-LED_round_1 = load([pwd '\measurements\OptoPlate2\' 'measurements_round_1.mat']);
+LED_round_1 = load([pwd '\measurements\OptoPlate1\' 'measurements_round_1.mat']);
 LED_round_1 = LED_round_1.measurements_out.LED;
 LED_round_1.round(:,1) = 1;
 
-LED_round_2 = load([pwd '\measurements\OptoPlate2\' 'measurements_round_2.mat']);
+LED_round_2 = load([pwd '\measurements\OptoPlate1\' 'measurements_round_2.mat']);
 LED_round_2 = LED_round_2.measurements_out.LED;
 LED_round_2.round(:,1) = 2;
 
