@@ -150,8 +150,14 @@ void loop()
     newSecond = false;
   }
   // Read Serial and update the TinyFrame listener
-  while(Serial.available() > 0) {
-    uint8_t rx_data = Serial.read();
-    TF_AcceptChar(tf, rx_data);
+  if(Serial.available() > 0) {
+    uint8_t buff[32];
+    uint8_t c  = 0;
+    while(Serial.available() > 0) {
+      buff[c] = Serial.read();
+      c++;
+      if(c > 32) break;
+    }
+    TF_Accept(tf, buff, c);
   }
 }
