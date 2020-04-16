@@ -6,13 +6,19 @@
 #include <Arduino.h>
 #include <EEPROM.h>
 
-typedef enum LEDstate_e
+typedef enum pulseState_e
 {
-    OFFSET,
-    LED_HIGH,
-    LED_LOW,
+    P_START,
+    P_HIGH,
+    P_LOW,
     DONE
-} LEDstate;
+} pulseState;
+
+typedef enum subPulseState_e
+{
+    SP_HIGH,
+    SP_LOW,
+} subPulseState;
 
 // Initializes the LEDs, assumes EEPROM has been flashed with calibration values
 void LEDinit();
