@@ -38,7 +38,7 @@ void LEDupdateGetIntensity(uint8_t index, uint16_t *intensity1_p, uint16_t *inte
     switch (pulseStates[index])
     {
     case P_START:
-        if(pulseTimeCounts[index] >= pulseStartTimes[index]) {
+        if(pulseTimeCounts[index] >= pusleStartTimes[index]) {
             pulseStates[index] = P_HIGH;
             pulseTimeCounts[index] = 0;
 
@@ -59,7 +59,7 @@ void LEDupdateGetIntensity(uint8_t index, uint16_t *intensity1_p, uint16_t *inte
             switch (subPulseStates[index])
             {
             case SP_HIGH:
-                if(subPulseTimeCounts[index] >= subPulseHighTimes[index]) {
+                if(subPulseTimeCounts[index] >= subpulseHighTimes[index]) {
                     subPulseStates[index] = SP_LOW;
                     subPulseTimeCounts[index] = 0;
                 } else {
@@ -68,7 +68,7 @@ void LEDupdateGetIntensity(uint8_t index, uint16_t *intensity1_p, uint16_t *inte
                 } 
                 break;
             case SP_LOW:
-                if(subPulseTimeCounts[index] >= subPulseLowTimes[index]) {
+                if(subPulseTimeCounts[index] >= subpulseLowTimes[index]) {
                     subPulseStates[index] = SP_HIGH;
                     subPulseTimeCounts[index] = 0;
                     *intensity1_p = getIntensity(index, 1);
@@ -83,13 +83,13 @@ void LEDupdateGetIntensity(uint8_t index, uint16_t *intensity1_p, uint16_t *inte
     if(pulseTimeCounts[index] >= pulseLowTimes[index]) {
         pulseCounts[index]++;
         pulseTimeCounts[index] = 0;
-        if(pulseCounts[index]>= pulseNumbers[index]) {
+        if(pulseCounts[index]>= pulseNumbs[index]) {
             pulseStates[index] = DONE;
         } else {
             pulseStates[index] = P_HIGH;
             subPulseStates[index] = SP_HIGH;
             subPulseTimeCounts[index] = 0;
-            
+
             *intensity1_p = getIntensity(index, 1);
             *intensity2_p = getIntensity(index, 2);
         }
@@ -104,5 +104,5 @@ void LEDupdateGetIntensity(uint8_t index, uint16_t *intensity1_p, uint16_t *inte
 uint16_t
 getIntensity(uint8_t index, uint8_t indexLED)
 {
-    return (uint16_t)((pgm_read_byte_near(&(intensities[index])) / 16.0) * calibrationValues[index][indexLED]);
+    return (uint16_t)((pgm_read_byte_near(&(amplitudes[index])) / 16.0) * calibrationValues[index][indexLED]);
 }
