@@ -1,3 +1,7 @@
+/*
+LED.h
+Finite state machine for the LEDs. Also handels the calibration values of the LEDs
+*/
 #ifndef _LED_H
 #define _LED_H
 
@@ -21,9 +25,9 @@ typedef enum subPulseState_e
 } subPulseState;
 
 // Initializes the LEDs, assumes EEPROM has been flashed with calibration values
-void LEDinit();
+void LED_init();
 
 // Increments the LED time and return the values from 0 to 4095 for the two LEDs in each well
-void LEDupdateGetIntensity(uint8_t index, uint16_t *intensity1_p, uint16_t *intensity2_p);
+void LED_updateGetIntensity(uint8_t index, uint16_t *intensity1_p, uint16_t *intensity2_p);
 
 #endif
