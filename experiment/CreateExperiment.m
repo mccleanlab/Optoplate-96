@@ -1,6 +1,14 @@
 %% createExperiment
 %   creates a .mat file with experiment data that can be flashed by
 %   FlashExperiment.m. Also returns the experiment
+% Function configurations
+%   - createExperiment(amplitudes, pulse_numbs, pusle_start_times,
+%   pulse_high_times, pulse_low_times) - Create experiment with only one level of pulses  
+%
+%   - createExperiment(amplitudes, pulse_numbs, pusle_start_times,
+%   pulse_high_times, pulse_low_times, subpulse_high_times,
+%   subpulse_low_times) - Create experiment with two levle of pulses
+%
 % Parameters
 % - amplitudes [8 by 12 matrix of unsigned 8 bit integer] - light intensity of
 %       each LED, 255 - max light intensity and 0 - no light
@@ -16,17 +24,29 @@
 %       seconds for high phase of subpulse
 % - subpulse_low_times [8 by 12 matrix of unsigned 16 bit integer] - time in
 %       seconds for low phase of subpulse
-function experiment = createExperiment( amplitudes,... 
-                                        pulse_numbs, pusle_start_times,...
-                                        pulse_high_times, pulse_low_times,...
-                                        subpulse_high_times, subpulse_low_times)
-    experiment.amplitudes= amplitudes; 
-    experiment.pulse_numbs = pulse_numbs;
-    experiment.pusle_start_times = pusle_start_times;
-    experiment.pulse_high_times = pulse_high_times;
-    experiment.pulse_low_times = pulse_low_times;
-    experiment.subpulse_high_times = subpulse_high_times;
-    experiment.subpulse_low_times = subpulse_low_times;
+function experiment = createExperiment(varargin)
+    switch length(varargin)
+        % Include subpulses
+        case 7 
+            experiment.amplitudes= varargin(1); 
+            experiment.pulse_numbs = varargin(2);
+            experiment.pusle_start_times = varargin(3);
+            experiment.pulse_high_times = varargin(4);
+            experiment.pulse_low_times = varargin(5);
+            experiment.subpulse_high_times = varargin(6);
+            experiment.subpulse_low_times = varargin(7);
+        % Only pulses
+        case 5
+            experiment.amplitudes= varargin(1); 
+            experiment.pulse_numbs = varargin(2);
+            experiment.pusle_start_times = varargin(3);
+            experiment.pulse_high_times = varargin(4);
+            experiment.pulse_low_times = varargin(5);
+            experiment.subpulse_high_times = varargin(4);
+            experiment.subpulse_low_times = ones(8, 12);
+        otherwise
+            error('Invalid number of input parameters');
+    end
     
     fn = fieldnames(experiment);
     max_value = [255, 65535, 65535, 65535, 65535, 65535, 65535];

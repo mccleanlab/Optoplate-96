@@ -1,5 +1,22 @@
-function[] = plotLedGui(experimnet_data)
-
+%% plotLedGui
+%   Plots the light intensity pattern of one LED and displays a GUI for selecting LED to plot
+% Function configurations
+%   - plotLedGui() - Open file explorer and select experiment
+%   - plotLedGui(experimnet_data) - Give an experiment created from
+%       createExperiment.m
+% Parameteres
+% - experimnet_data [struct] struct created by createExperiment.m 
+function[] = plotLedGui(varargin)
+    switch length(varargin)
+        case 0
+            [file, path] = uigetfile('experiment_files/*.mat','Select LED experiment file');
+            experimnet_data = load([path, file]);
+            experimnet_data = experimnet_data.experiment;
+        case 1
+            experimnet_data = varargin(1);
+        otherwise
+            error('Invalid number of input parameters');
+    end
     letters = 'ABCDEFGH';
     
     %Dimensions of buttons
