@@ -5,18 +5,17 @@
     "tasks": [
         {
             "type": "shell",
-            "label": "g++.exe build active file",
+            "label": "Compile library",
             "command": "C:\\mingw-w64\\i686-8.1.0-posix-dwarf-rt_v6-rev0\\mingw32\\bin\\g++.exe",
             "args": [
-                "-g",
-                "${workspaceFolder}\\*.cpp",
-                "${workspaceFolder}\\*.c",
+                "-c",
+                "-fpic",
+                "${workspaceFolder}\\OptoPlate.cpp",
+                "${workspaceFolder}\\TinyFrame.c",
                 "${workspaceFolder}\\utilities\\*.c",
-                "-o",
-                "${fileDirname}\\${fileBasenameNoExtension}.exe"
             ],
             "options": {
-                "cwd": "C:\\mingw-w64\\i686-8.1.0-posix-dwarf-rt_v6-rev0\\mingw32\\bin"
+                "cwd": "${workspaceFolder}\\Build"
             },
             "problemMatcher": [
                 "$gcc"
@@ -25,6 +24,64 @@
                 "kind": "build",
                 "isDefault": true
             }
+        },
+        {
+            "type": "shell",
+            "label": "Link complex library",
+            "command": "C:\\mingw-w64\\i686-8.1.0-posix-dwarf-rt_v6-rev0\\mingw32\\bin\\g++.exe",
+            "args": [
+                "-shared",
+                "-o",
+                "OptoPlate.dll",
+                "${workspaceFolder}\\Build\\*.o",
+                "--enable-auto-import",
+
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "type": "shell",
+            "label": "Link library",
+            "command": "C:\\mingw-w64\\i686-8.1.0-posix-dwarf-rt_v6-rev0\\mingw32\\bin\\g++.exe",
+            "args": [
+                "-shared",
+                "-o",
+                "OptoPlate.dll",
+                "${workspaceFolder}\\Build\\*.o",
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "type": "shell",
+            "label": "Compile test",
+            "command": "C:\\mingw-w64\\i686-8.1.0-posix-dwarf-rt_v6-rev0\\mingw32\\bin\\g++.exe",
+            "args": [
+                "-o",
+                "Test",
+                "main.cpp",
+                "-L./",
+                "-lOptoPlate",
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
         }
+
     ]
 }
