@@ -2,7 +2,7 @@
 %   creates a .mat file with experiment data that can be flashed by
 %   FlashExperiment.m. Also returns the experiment
 % Parameters
-% - amplitudes[8 by 12 matrix of unsigned 8 bit integer] - light intensity of
+% - amplitudes [8 by 12 matrix of unsigned 8 bit integer] - light intensity of
 %       each LED, 255 - max light intensity and 0 - no light
 % - pulse_numbs [8 by 12 matrix of unsigned 16 bit integer] - number of pulses
 %       for each LED
