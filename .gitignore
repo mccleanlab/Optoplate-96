@@ -1,3 +1,4 @@
 
 experiment/arduino/src/experiment_config.h
-experiment/FlashExperiment.asv
+*.asv
+experiment/windows_driver/Build
