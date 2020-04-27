@@ -1,8 +1,12 @@
 #include <Windows.h>
 #include "OptoPlate.h"
+#include <stdio.h>
 
 int main() {
-  const char * portName = "COM5";
+  int i  = 1;
+  i = iterate(i);
+  printf("Iteration: %i\n", i);
+  const char * portName = "COM3";
   OptoPlateInit(portName);
 
   OptoPlateDisableLED(23);
