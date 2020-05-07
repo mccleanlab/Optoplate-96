@@ -28,21 +28,21 @@ function experiment = createExperiment(varargin)
     switch length(varargin)
         % Include subpulses
         case 7 
-            experiment.amplitudes= varargin(1); 
-            experiment.pulse_numbs = varargin(2);
-            experiment.pusle_start_times = varargin(3);
-            experiment.pulse_high_times = varargin(4);
-            experiment.pulse_low_times = varargin(5);
-            experiment.subpulse_high_times = varargin(6);
-            experiment.subpulse_low_times = varargin(7);
+            experiment.amplitudes= varargin{1}; 
+            experiment.pulse_numbs = varargin{2};
+            experiment.pusle_start_times = varargin{3};
+            experiment.pulse_high_times = varargin{4};
+            experiment.pulse_low_times = varargin{5};
+            experiment.subpulse_high_times = varargin{6};
+            experiment.subpulse_low_times = varargin{7};
         % Only pulses
         case 5
-            experiment.amplitudes= varargin(1); 
-            experiment.pulse_numbs = varargin(2);
-            experiment.pusle_start_times = varargin(3);
-            experiment.pulse_high_times = varargin(4);
-            experiment.pulse_low_times = varargin(5);
-            experiment.subpulse_high_times = varargin(4);
+            experiment.amplitudes= varargin{1}; 
+            experiment.pulse_numbs = varargin{2};
+            experiment.pusle_start_times = varargin{3};
+            experiment.pulse_high_times = varargin{4};
+            experiment.pulse_low_times = varargin{5};
+            experiment.subpulse_high_times = varargin{4};
             experiment.subpulse_low_times = ones(8, 12);
         otherwise
             error('Invalid number of input parameters');
@@ -53,7 +53,7 @@ function experiment = createExperiment(varargin)
     for k=1:numel(fn)
         % Test input parameter matrix size
         if ~isequal(size(experiment.(fn{k})), [8, 12])
-            error(['Error: input parameter "', fn{k}, '" is not a 8 by 12 matrix.'])
+            error(['Error: input parameter "', fn{k}, '" is not an 8 by 12 matrix.'])
         % Test input parameter for nonintegers
         elseif ~isequal(floor(experiment.(fn{k})), experiment.(fn{k}))
             error(['Error: input parameter "' fn{k}, '" is not a matrix of integers.'])
