@@ -3,109 +3,108 @@
 // Outputs a value from 0 to 4095, indicating the LED intensity adjusted with calibration value
 uint16_t getIntensity(uint8_t index, uint8_t indexLED);
 
-uint8_t phase[NUMB_LED];
-uint16_t phaseTime[NUMB_LED];
-uint8_t caliNumb[NUMB_LED][2];
-uint8_t periodCount[NUMB_LED];
-LEDstate state[NUMB_LED];
-bool enabled[NUMB_LED]; 
+uint8_t calibrationValues[NUMB_LED][2];
 
-void LEDinit()
-{   
-    
+pulseState pulseStates[NUMB_LED]; // The current state of the LED
+uint16_t pulseCounts[NUMB_LED]; // Number of pulses that have been looped through
+uint16_t pulseTimeCounts[NUMB_LED]; // Time in seconds since start of high phase of pulse or low phase of pulse
+
+subPulseState subpulseStates[NUMB_LED]; // Number of subpulses in pulse that have been looped through
+uint16_t subpulseTimeCounts[NUMB_LED]; // Time in seconds since start of high phase of subpulse or low phase of subpulse
+
+bool enabled[NUMB_LED]; //  Enable/disable LED 
+
+void LED_init()
+{
     for (uint8_t i = 0; i < NUMB_LED; i++)
     {
-        phase[i] = 0;
-        phaseTime[i] = 0;
-        caliNumb[i][0] = EEPROM.read(i * 2);
-        caliNumb[i][1] = EEPROM.read(i * 2 + 1);
-        periodCount[i] = 0;
+        // Load calibration values from static memory
+        calibrationValues[i][0] = EEPROM.read(i * 2);
+        calibrationValues[i][1] = EEPROM.read(i * 2 + 1);
+
+        // Initiate state machine
+        pulseStates[i] = P_START;
+        pulseCounts[i] = 0;
+        pulseTimeCounts[i] = 0;
+
+        subpulseStates[i] = SP_HIGH;
+        subpulseTimeCounts[i] = 0;
+
         enabled[i] = true;
-        state[i] = OFFSET;
     }
 }
 
-void LEDupdateGetIntensity(uint8_t index, uint16_t *intensity1_p, uint16_t *intensity2_p)
+void LED_updateGetIntensity(uint8_t index, uint16_t *intensity1_p, uint16_t *intensity2_p)
 {
+
+    *intensity1_p = 0;
+    *intensity2_p = 0;
     if(enabled[index]) {
-        phaseTime[index]++;
-        switch (state[index])
+        pulseTimeCounts[index]++;
+        switch (pulseStates[index])
         {
-        case OFFSET:
+        case P_START:
+            if(pulseTimeCounts[index] >= pgm_read_word_near(&pusleStartTimes[index])) {
+                pulseStates[index] = P_HIGH;
+                pulseTimeCounts[index] = 0;
 
-            //Serial.println("Offset");
-            if (phaseTime[index] >= pgm_read_word_near(&(offset[index][phase[index]])))
-            {
-                state[index] = LED_HIGH;
-                *intensity1_p = getIntensity(index, 0);
-                *intensity2_p = getIntensity(index, 1);
-                phaseTime[index] = 0;
+                subpulseStates[index] = SP_HIGH;
+                subpulseTimeCounts[index] = 0;
+                *intensity1_p = getIntensity(index, 1);
+                *intensity2_p = getIntensity(index, 2);
             }
-            else
-            {
-                *intensity1_p = 0;
-                *intensity2_p = 0;
+        break;
+
+        case P_HIGH:
+            if(pulseTimeCounts[index] >= pgm_read_word_near(&pulseHighTimes[index])) {
+                pulseStates[index] = P_LOW;
+                pulseTimeCounts[index] = 0;
             }
-            break;
-        case LED_HIGH:
-            //Serial.println("Led High");
-            if (phaseTime[index] >= pgm_read_word_near(&(tPulse[index][phase[index]])))
-            {
-                state[index] = LED_LOW;
-                phaseTime[index] = 0;
-            }
-            else
-            {
-                *intensity1_p = getIntensity(index, 0);
-                *intensity2_p = getIntensity(index, 1);
-            }
-            break;
-        case LED_LOW:
-            //Serial.println("Led low");
-            if (phaseTime[index] >= pgm_read_word_near(&(tInterpulse[index][phase[index]])))
-            {
-                periodCount[index]++;
-                phaseTime[index] = 0;
-                if (periodCount[index] >= pgm_read_byte_near(&(periods[index][phase[index]])))
+            else {
+                subpulseTimeCounts[index]++;
+                switch (subpulseStates[index])
                 {
-                    phase[index]++;
-                    if (phase[index] >= PHASE_NUMB)
-                    {
-                        state[index] = DONE;
+                case SP_HIGH:
+                    if(subpulseTimeCounts[index] >= pgm_read_word_near(&subpulseHighTimes[index])) {
+                        subpulseStates[index] = SP_LOW;
+                        subpulseTimeCounts[index] = 0;
+                    } else {
+                        *intensity1_p = getIntensity(index, 1);
+                        *intensity2_p = getIntensity(index, 2);
+                    } 
+                    break;
+                case SP_LOW:
+                    if(subpulseTimeCounts[index] >= pgm_read_word_near(&subpulseLowTimes[index])) {
+                        subpulseStates[index] = SP_HIGH;
+                        subpulseTimeCounts[index] = 0;
+                        *intensity1_p = getIntensity(index, 1);
+                        *intensity2_p = getIntensity(index, 2);
                     }
-                    else
-                    {
-                        state[index] = OFFSET;
-                        periodCount[index] = 0;
-                    }
-                    *intensity1_p = 0;
-                    *intensity2_p = 0;
-                }
-                else
-                {
-                    state[index] = LED_HIGH;
-                    *intensity1_p = getIntensity(index, 0);
-                    *intensity2_p = getIntensity(index, 1);
+                break;
                 }
             }
-            else
-            {
-                *intensity1_p = 0;
-                *intensity2_p = 0;
-            }
-            break;
-        case DONE:
-            //Serial.println("Led Done");
-            *intensity1_p = 0;
-            *intensity2_p = 0;
-            break;
+        break;
 
-        default:
-            break;
+        case P_LOW:
+        if(pulseTimeCounts[index] >= pgm_read_word_near(&pulseLowTimes[index])) {
+            pulseCounts[index]++;
+            pulseTimeCounts[index] = 0;
+            if(pulseCounts[index]>= pgm_read_word_near(&pulseNumbs[index])) {
+                pulseStates[index] = DONE;
+            } else {
+                pulseStates[index] = P_HIGH;
+                subpulseStates[index] = SP_HIGH;
+                subpulseTimeCounts[index] = 0;
+
+                *intensity1_p = getIntensity(index, 1);
+                *intensity2_p = getIntensity(index, 2);
+            }
         }
-    } else {
-        *intensity1_p = 0;
-        *intensity2_p = 0;
+        break;
+
+        case DONE:
+        break;
+        }
     }
 }
 
@@ -120,5 +119,5 @@ void LEDenable(uint8_t index) {
 uint16_t
 getIntensity(uint8_t index, uint8_t indexLED)
 {
-    return (uint16_t)((pgm_read_byte_near(&(intensities[index][phase[index]])) / 16.0) * caliNumb[index][indexLED]);
+    return (uint16_t)((pgm_read_byte_near(&(amplitudes[index])) / 16.0) * calibrationValues[index][indexLED]);
 }
