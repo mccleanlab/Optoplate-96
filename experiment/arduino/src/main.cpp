@@ -23,21 +23,23 @@ const int chanNum = 24 * NUM_TLC5974; //number of channels
 
 Adafruit_TLC5947 tlc = Adafruit_TLC5947(NUM_TLC5974, CLK_PIN, DATA_PIN, LATCH_PIN); //creates LED driver object
 
-void setLED(uint16_t well, uint16_t bright1, uint16_t bright2)
+bool needLedSetup = false;
+
+void setLED(uint16_t well, uint16_t intensity1, uint16_t intensity2)
 {
-  tlc.setPWM((uint16_t)((int)(well / 12) + 8 * (well % 12)), bright1); //Set Blue
-  tlc.setPWM((uint16_t)(well + 192), bright2);                         //Set Blue1
+  tlc.setPWM((uint16_t)((int)(well / 12) + 8 * (well % 12)), intensity1); //Set Blue
+  tlc.setPWM((uint16_t)(well + 192), intensity2);                         //Set Blue1
 }
 
-// ------------------------------------------------------------------------ 
-// Setting up robust serial communication using TinyFrame 
+// ------------------------------------------------------------------------
+// Setting up robust serial communication using TinyFrame
 TinyFrame tf_s;
 #define tf  &tf_s
 
 
 /** An example listener function */
 TF_Result myListener(TinyFrame *tf_p, TF_Msg *msgIn)
-{   
+{
     uint8_t data = msgIn->data[0] + 2;
     TF_Msg msg;
     TF_ClearMsg(&msg);
@@ -89,8 +91,8 @@ ISR(TIMER1_COMPA_vect)
 
 void setup()
 {
-  // Init the state machine for the LEDs
-  LEDinit();
+
+  LED_init();
 
   Serial.begin(115200);
 
@@ -139,11 +141,19 @@ void loop()
   if (newSecond)
   {
     // Set new values on LEDs
+    tlc.write();
+    needLedSetup = true;
+    newSecond = false;
+  }
+  else if (needLedSetup)
+  {
+    // Prepare values for next second
+    needLedSetup = false;
     for (uint8_t i = 0; i < NUM_LEDS; i++)
     {
       uint16_t intensity1 = 0;
       uint16_t intensity2 = 0;
-      LEDupdateGetIntensity(i, &intensity1, &intensity2);
+      LED_updateGetIntensity(i, &intensity1, &intensity2);
       setLED(i, intensity1, intensity2);
     }
     tlc.write();

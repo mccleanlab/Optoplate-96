@@ -1,3 +1,13 @@
 
 experiment/arduino/src/experiment_config.h
+*.asv
 experiment/windows_driver/Build
+*.o
+*.a
+*.hex
+*.checksum
+*.dblite
+experiment/arduino/.vscode/launch.json
+experiment/arduino/.vscode/extensions.json
+*.elf
+experiment/arduino/.vscode/c_cpp_properties.json
