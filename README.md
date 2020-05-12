@@ -30,7 +30,7 @@ Create following matrices:
 - subpulse_high_times [8 by 12 matrix of unsigned 16 bit integer] - time in seconds for high phase of subpulse
 - subpulse_low_times [8 by 12 matrix of unsigned 16 bit integer] - time in seconds for low phase of subpulse
 Each cell in the matrices coresponds to one light well on the OptoPlate.
-See timing diagram for further explanation of the parameters.
+![Timing Diagram](https://github.com/EdvardGrodem/Optoplate-96/blob/NewPWM/timingDiagram.png)
 Create an experiment file by calling the function experiment/createExperiment.m
 Make sure the OptoPlate is connected to the computer via an USB cable. Run the script experiment/FlashExperiment.m and select the experiment file.
 The experiment will start immediately and will continue as long as the Arduino on the OptoPlate gets power either through the USB cable or the 7V input. If power is cut to the Arduino, the experiment will reset. The experiment will also reset if the reset button on the Arduino is pressed.
