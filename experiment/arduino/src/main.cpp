@@ -79,7 +79,7 @@ void TF_WriteImpl(TinyFrame *tf_p, const uint8_t *buff, uint32_t len)
 
 // ------------------------------------------------------------------------
 
-// Goes true every second so that the LEDs will be flashed
+// True every second so that the LEDs will be flashed
 bool newSecond = false;
 
 // Interupt function that is called every second
