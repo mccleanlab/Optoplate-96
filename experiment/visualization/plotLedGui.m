@@ -13,7 +13,7 @@ function[] = plotLedGui(varargin)
             experimnet_data = load([path, file]);
             experimnet_data = experimnet_data.experiment;
         case 1
-            experimnet_data = varargin(1);
+            experimnet_data = varargin{1};
         otherwise
             error('Invalid number of input parameters');
     end
@@ -44,7 +44,7 @@ end
 function btn_event(f_plot, experimnet_data, x, y)
     letters = 'ABCDEFGH';
     figure(f_plot);
-    plotLedPattern(experimnet_data.amplitude(y, x), experimnet_data.pulse_numb(y, x), experimnet_data.pusle_start_time(y, x), experimnet_data.pulse_high_time(y, x), experimnet_data.pulse_low_time(y, x), experimnet_data.subpulse_high_time(y, x), experimnet_data.subpulse_low_time(y, x));
+    plotLedPattern(experimnet_data.amplitudes(y, x), experimnet_data.pulse_numbs(y, x), experimnet_data.pusle_start_times(y, x), experimnet_data.pulse_high_times(y, x), experimnet_data.pulse_low_times(y, x), experimnet_data.subpulse_high_times(y, x), experimnet_data.subpulse_low_times(y, x));
     title([letters(y), num2str(x)]);
 end
 

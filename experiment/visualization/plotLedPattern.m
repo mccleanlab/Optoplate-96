@@ -42,29 +42,33 @@ function [a, t] = generateLedPattern(amplitude,...
                                     pulse_numb, pusle_start_time,...
                                     pulse_high_time, pulse_low_time,... 
                                     subpulse_high_time, subpulse_low_time)
-    numb_subpulses = floor(pulse_high_time/(subpulse_high_time + subpulse_low_time));
-    % Make one subpulse
-    subpulse_a = [amplitude, amplitude, 0, 0];
-    subpulse_t = [0,subpulse_high_time, subpulse_high_time, subpulse_high_time + subpulse_low_time];
     pulse_a = [0];
     pulse_t = [0];
-    % Repeat the subpulse into one pulse
-    for i = 1:numb_subpulses
-       pulse_a = [pulse_a, subpulse_a];
-       pulse_t = [pulse_t, (pulse_t(end)+subpulse_t)];
-    end
-    % Handle edge cases of subpulse in pulse
-    if pulse_t(end) ~= pulse_high_time && pulse_t(end)+subpulse_high_time > pulse_high_time
+    if subpulse_high_time >= pulse_high_time 
         pulse_a = [pulse_a, amplitude, amplitude, 0];
-        pulse_t = [pulse_t, pulse_t(end), pulse_high_time, pulse_high_time];
-    elseif pulse_t(end)+subpulse_high_time < pulse_high_time
-        pulse_a = [pulse_a, amplitude, amplitude, 0, 0];
-        pulse_t = [pulse_t, pulse_t(end), pulse_t(end)+subpulse_high_time, pulse_t(end)+subpulse_high_time, pulse_high_time];
+        pulse_t = [pulse_t, 0,  subpulse_high_time, subpulse_high_time];
+    else
+        numb_subpulses = floor(pulse_high_time/(subpulse_high_time + subpulse_low_time));
+        % Make one subpulse
+        subpulse_a = [amplitude, amplitude, 0, 0];
+        subpulse_t = [0,subpulse_high_time, subpulse_high_time, subpulse_high_time + subpulse_low_time];
+        % Repeat the subpulse into one pulse
+        for i = 1:numb_subpulses
+           pulse_a = [pulse_a, subpulse_a];
+           pulse_t = [pulse_t, (pulse_t(end)+subpulse_t)];
+        end
+        % Handle edge cases of subpulse in pulse
+        if pulse_t(end) ~= pulse_high_time && pulse_t(end)+subpulse_high_time > pulse_high_time
+            pulse_a = [pulse_a, amplitude, amplitude, 0];
+            pulse_t = [pulse_t, pulse_t(end), pulse_high_time, pulse_high_time];
+        elseif pulse_t(end)+subpulse_high_time < pulse_high_time
+            pulse_a = [pulse_a, amplitude, amplitude, 0, 0];
+            pulse_t = [pulse_t, pulse_t(end), pulse_t(end)+subpulse_high_time, pulse_t(end)+subpulse_high_time, pulse_high_time];
+        end
     end
     % Add low phase of pusle
     pulse_a = [pulse_a, 0];
-    pulse_t = [pulse_t, pulse_t(end)+ pulse_low_time];
-    
+    pulse_t = [pulse_t, pulse_t(end)+ pulse_low_time]; 
     % Create final output
     a = [0, 0];
     t = [0, pusle_start_time];
