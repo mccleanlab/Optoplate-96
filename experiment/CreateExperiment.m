@@ -64,6 +64,7 @@ function experiment = createExperiment(varargin)
             error(['Error: input parameter "' fn{k}, '" contanin value(s) smaller then 0.'])
         end
     end
+    
 
     [file_name,path] = uiputfile('experiment_files/.mat');
     save([path, file_name], 'experiment');
