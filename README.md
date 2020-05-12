@@ -1,6 +1,6 @@
 # OptoPlate-96
-This repository contains the code and files to calibrate and operate the [OptoPlate-96](https://www.bugajlab.com/optoplate-96). The original repository for the OptoPlate-96 can be found [here](https://github.com/BugajLab/optoPlate-96/). 
-This repository was created from to provide these two features for the OptoPlate:
+This repository contains the code  to calibrate and operate the [OptoPlate-96](https://www.bugajlab.com/optoplate-96). To construct the OptoPlate see the original repository for the OptoPlate-96 that can be found [here](https://github.com/BugajLab/optoPlate-96/). 
+This repository was created to provide these features for the OptoPlate-96:
 - MATLAB interface for operation of the OptoPlate-96.
 - Functionality for calibration of the light intensities of the LEDs.
 - Supports two levles of pulses to reduse the risk of light poisoning.
@@ -15,9 +15,10 @@ This repository was created from to provide these two features for the OptoPlate
   - Click Environment Variables. In the section System Variables, find the PATH environment variable and select it. Click Edit. If the PATH environment variable does not exist, click New.
   - In the Edit enviroment variable window window create a new Path and paste `C:\Users\UserName\.platformio\penv\Scripts`. Make sure the new Path is on the top. 
   - Click OK. Close all remaining windows by clicking OK.
+You should now be able to flash the OptoPlate-96 from your computer.
 
 ## Getting Started
-If the OptoPlate has never been used before, it must be flashed with calibration values. Ideally the calibration procedure should be followed to calibrate the OptoPlate to ensure consistent light intensities in the different wells. However, the OptoPlate will function with the default calibration values.
+If the OptoPlate-96 has never been used before, it must be flashed with calibration values. Ideally the calibration procedure should be followed to calibrate the OptoPlate to ensure consistent light intensities in the different wells. However, the OptoPlate-96 will function with the default calibration values.
 To flash the default calibration values make sure the OptoPlate is connected to the PC with an USB cable annd run the file calibration/FlashCalibration.m and select calibration/calibration_files/cal_round_0.mat. For instructions on how to calibrate the OptoPlate see this article. 
 
 To create an experiment, follow this procedure:
@@ -33,5 +34,5 @@ Each cell in the matrices coresponds to one light well on the OptoPlate.
 ![Timing Diagram](https://github.com/EdvardGrodem/Optoplate-96/blob/master/timingDiagram.png)
 Create an experiment file by calling the function experiment/createExperiment.m
 Make sure the OptoPlate is connected to the computer via an USB cable. Run the script experiment/FlashExperiment.m and select the experiment file.
-The experiment will start immediately and will continue as long as the Arduino on the OptoPlate gets power either through the USB cable or the 7V input. If power is cut to the Arduino, the experiment will reset. The experiment will also reset if the reset button on the Arduino is pressed.
+The experiment will start immediately and will continue as long as the Arduino on the OptoPlate has power either through the USB cable or the 7V input. If power is cut to the Arduino, the experiment will reset. The experiment will also reset if the reset button on the Arduino is pressed.
 
