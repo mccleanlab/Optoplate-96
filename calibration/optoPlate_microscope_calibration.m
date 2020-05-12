@@ -160,7 +160,7 @@ if plot_measurements_raw==true
     g.set_names('x','Time','y','Intensity (µW/cm^2)','color','','row','');
     g.draw();
     
-    g.update('color',cellstr(measurements.well),'subset',~isnan(measurements.intensity))
+    g.update('color',cellstr(measurements.well),'subset',~isnan(measurements.intensity));
     g.geom_point();
     g.set_color_options('map',cmap);
     g.axe_property('YLim',[0 300]);
@@ -177,7 +177,7 @@ if plot_measurements_raw==true
     g.geom_label('FontSize',10);
     g.set_color_options('map',[80 80 80]/255);
     g.set_names('x','Time','y','Intensity (µW/cm^2)','color','','row','');
-    g.draw()
+    g.draw();
 end
 
 %% Calculate intensity of each LED
@@ -239,8 +239,8 @@ if cal_round==0
     % Plot LED intensities
     clear g; figure('Position',[100 100 1200 800])
     
-%     ymax = 1.25*max(LED.intensity);
-    ymax = 220;
+    %     ymax = 1.25*max(LED.intensity);
+    ymax = 350;
     
     g = gramm('x',cellstr(LED.well),'y',LED.intensity,...
         'color',cellstr(regexp(LED.well,'[a-zA-Z]*','match')),'subset',~isnan(LED.intensity));
@@ -253,8 +253,8 @@ if cal_round==0
 elseif cal_round~=0
     % Create heatmap labels
     clear g; figure('Position',[100 100 1200 800])
-%     ymax = 1.25*max(LED.intensity);
-        ymax = 120;
+    %     ymax = 1.25*max(LED.intensity);
+    ymax = 120;
     rowlist = 'A':'H';
     column_list = string(cellfun(@(x) sprintf('%02d',x),num2cell(1:12),'UniformOutput',false));
     xlabeldisp(1:2:23) = string(1:12);
@@ -283,7 +283,7 @@ elseif cal_round~=0
     g.geom_point();
     g.set_title(['LED intensities: round ' num2str(cal_round)]);
     g.axe_property('XTickLabelRotation',60,'YLim',[0 ymax],'Xlim',[0 97]);
-    g.set_text_options('font','arial','interpreter','tex','base_size',8);
+    g.set_text_options('font','arial','interpreter','tex','base_size',6);
     g.set_names('x','Well','y', ['Intensity (' units ')' newline 'mean ± std'],'Row','LED','Color','Row');
     g.draw();
     savefig(gcf,[path 'intensities_round_' num2str(cal_round)]);
