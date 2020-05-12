@@ -39,7 +39,7 @@ void LED_updateGetIntensity(uint8_t index, uint16_t *intensity1_p, uint16_t *int
     switch (pulseStates[index])
     {
     case P_START:
-        if(pulseTimeCounts[index] >= pgm_read_byte_near(&pusleStartTimes[index])) {
+        if(pulseTimeCounts[index] >= pgm_read_word_near(&pusleStartTimes[index])) {
             pulseStates[index] = P_HIGH;
             pulseTimeCounts[index] = 0;
 
@@ -51,7 +51,7 @@ void LED_updateGetIntensity(uint8_t index, uint16_t *intensity1_p, uint16_t *int
     break;
 
     case P_HIGH:
-        if(pulseTimeCounts[index] >= pgm_read_byte_near(&pulseHighTimes[index])) {
+        if(pulseTimeCounts[index] >= pgm_read_word_near(&pulseHighTimes[index])) {
             pulseStates[index] = P_LOW;
             pulseTimeCounts[index] = 0;
         }
@@ -60,7 +60,7 @@ void LED_updateGetIntensity(uint8_t index, uint16_t *intensity1_p, uint16_t *int
             switch (subpulseStates[index])
             {
             case SP_HIGH:
-                if(subpulseTimeCounts[index] >= pgm_read_byte_near(&subpulseHighTimes[index])) {
+                if(subpulseTimeCounts[index] >= pgm_read_word_near(&subpulseHighTimes[index])) {
                     subpulseStates[index] = SP_LOW;
                     subpulseTimeCounts[index] = 0;
                 } else {
@@ -69,7 +69,7 @@ void LED_updateGetIntensity(uint8_t index, uint16_t *intensity1_p, uint16_t *int
                 } 
                 break;
             case SP_LOW:
-                if(subpulseTimeCounts[index] >= pgm_read_byte_near(&subpulseLowTimes[index])) {
+                if(subpulseTimeCounts[index] >= pgm_read_word_near(&subpulseLowTimes[index])) {
                     subpulseStates[index] = SP_HIGH;
                     subpulseTimeCounts[index] = 0;
                     *intensity1_p = getIntensity(index, 1);
@@ -81,10 +81,10 @@ void LED_updateGetIntensity(uint8_t index, uint16_t *intensity1_p, uint16_t *int
     break;
 
     case P_LOW:
-    if(pulseTimeCounts[index] >= pgm_read_byte_near(&pulseLowTimes[index])) {
+    if(pulseTimeCounts[index] >= pgm_read_word_near(&pulseLowTimes[index])) {
         pulseCounts[index]++;
         pulseTimeCounts[index] = 0;
-        if(pulseCounts[index]>= pgm_read_byte_near(&pulseNumbs[index])) {
+        if(pulseCounts[index]>= pgm_read_word_near(&pulseNumbs[index])) {
             pulseStates[index] = DONE;
         } else {
             pulseStates[index] = P_HIGH;
