@@ -12,6 +12,10 @@ void readSerial(HANDLE  & hComm, char data[255], int & dLength);
 void closeSerial(HANDLE & hComm);
 void initSerial(HANDLE & hComm, const char * ComPortName);
 
+LUCIA_CALLBACK_API int iterate(int i) {
+	return i+1;
+}
+
 void TF_WriteImpl(TinyFrame *tf, const uint8_t *buff, uint32_t len)
 {
   sendSerial(hComm, (char * ) buff, (int) len);

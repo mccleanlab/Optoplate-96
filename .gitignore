@@ -11,3 +11,4 @@ experiment/arduino/.vscode/launch.json
 experiment/arduino/.vscode/extensions.json
 *.elf
 experiment/arduino/.vscode/c_cpp_properties.json
+*.dll

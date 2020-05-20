@@ -11,10 +11,16 @@
 
 void OptoPlateInit(const char * portName);
 void OptoPlateDisconnect();
+#define LUCIA_CALLBACK_EXPORTS
+#ifdef LUCIA_CALLBACK_EXPORTS
+#define LUCIA_CALLBACK_API __declspec(dllexport)
+#else
+#define LUCIA_CALLBACK_API __declspec(dllimport)
+#endif
 
-int iterate(int i) {
-    return i + 1;
-}
+extern "C" LUCIA_CALLBACK_API int iterate(int i);
+
+
 
 void OptoPlateDisableLED(uint8_t LEDindex);
 void OptoPlateEnableLED(uint8_t LEDindex);
