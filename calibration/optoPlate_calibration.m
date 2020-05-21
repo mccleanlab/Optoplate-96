@@ -1,5 +1,61 @@
-clearvars; clc; close all;
+% This script imports optoPlate irradiance measurements acquired by a
+% ThorLabs optical power meter, maps the measurements to the optoPlate
+% LEDs, and calculates calibration values such that each LED is equally
+% bright. When executed, this script will prompt users to load all
+% measurements for a given calibration round. Relevent information
+% describing these measurements may have should be included in the
+% measurements' filenames as follows:
+%
+%   WELLS01 | WELLS02 : indicates set of wells measured
+%                       eg, CHECKER01 or CHECKER02 patterns
+%
+%   LED01 | LED02 | LED00: indicates if left, right, or both LEDs measured
+%
+%   ROUND01 ... ROUND0*: indicates curret calibration round
+%                       omit ROUND label to measure only (no calibration)
+%
+% This script assumes a set well order in which 1) the micrscope rasters
+% through a 96 well plate mounted on its programmable stage from A1-A12 to
+% B12-B1 and so on and 2) the optoPlate is flipped when mounted upside down
+% on that 96 well plate so that these measurements actually correspond to
+% optoPlate wells A12-A1 to B1-B12 etc. The set of wells measured can be
+% designated by flashing to the optoPlate either CHECKER01.mat (sets
+% checkerboard pattern in which LEDs in optoPlate well A01 are active) or
+% CHECKER02.mat (sets checkerboard pattern in which LEDs in optoPlate well
+% A01 are inactive).
+%
+% This script generates three primary tables:
+%   measurements: all irradaince measurement (mapped to well or not) LED:
+%   single irradiance measurement per LED optoPlate_stats: overall
+%   optoPlate statitics (irradiance mean, CV, etc)
+
+% This script exports the following files:
+%   measurements_*.mat: contains three primary tables (see above)
+%
+%   cal_round_*.mat: calibration values for round * which can be
+%                    subsequently flashed to optoPlate to calibrate
+%
+%   intesities_round_*.fig: scatterplot of irradiance measurements per LED
+%                           for round *
+%
+%   headmeap_round*.fig: heatmap of irradiances and calibration values per
+%                        LED for round *
+%
+% This script is loosely based on calibration.m by Sebastian Castillo-Hair,
+% as described in:
+%   Gerhardt, K. P. et al. An open-hardware platform for optogenetics and
+%   photobiology. Nat. Publ. Gr. 1–13 (2016). doi:10.1038/srep35363
+%
+% Graphs are implemented via the GRAMM plotting package:
+%   Morel, Pierre.“Gramm: Grammar of Graphics Plotting in Matlab.” The
+%   Journal of Open Source Software, vol. 3, no. 23, The Open Journal, Mar.
+%   2018, p. 568, doi:10.21105/joss.00568.
+%
+% Written by Kieran Sweeney and Edvard Groedem, UW-Madison, 2020
+
+
 %% Set parameters
+clearvars; clc; close all;
 amp_thresh = 0.025; % Fraction of max intensity threshold for segmenting wells
 min_peak_dist = 2; % Minimum number of samples between peaks
 num_wells = 48; % Number of wells in each power meter measurements file
@@ -102,8 +158,7 @@ for f = 1:nFiles
     locs = locs + floor(width/2); % Center peaks
     [val,idx] = min(abs(time-locs));
     well_idx = time(idx)';
-    
-    
+        
     % Show warning if incorrect number of wells found
     if numel(pks)~=num_wells
         disp(['Warning: ' num2str(numel(pks)) ' peaks detected'])
@@ -200,7 +255,8 @@ if cal_round~=0 % Calculate calibration values
     intensities_display(2:2:192) = intensities(:,2);
     intensities_display = reshape(intensities_display,24,8)';
     
-    % Scale intensities by calibration values from previous round (if applicable)
+    % Scale intensities by calibration values from previous round (if
+    % applicable)
     if cal_round == 1
         intensities_round_1 = intensities;
         save([path 'intensities_round_1'],'intensities_round_1');
@@ -298,7 +354,7 @@ optoPlate_stats.CV = 100*optoPlate_stats.std/optoPlate_stats.mean;
 optoPlate_stats.max = max(LED.intensity);
 optoPlate_stats.min = min(LED.intensity);
 
-optoPlate_stats
+disp(optoPlate_stats);
 
 %% Save measurements, calibration values, and statistics
 measurements_out.round = cal_round;
@@ -313,4 +369,4 @@ if cal_round~=0
 end
 
 %% Clean up
-% clearvars -except input_values output_intensity measurements measurements_raw LED model
+clearvars -except measurements LED optoPlate_stats
