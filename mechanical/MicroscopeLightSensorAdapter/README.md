@@ -1,1 +1,1 @@
-Adapter for mounting Thorlabs Standard Photodiode Power Sensors S12  to Nikon TiE inverted microscope
+Adaptor for mounting Thorlabs Standard Photodiode Power Sensors S12  to Nikon TiE inverted microscope
