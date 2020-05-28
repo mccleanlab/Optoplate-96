@@ -369,4 +369,4 @@ if cal_round~=0
 end
 
 %% Clean up
-clearvars -except measurements LED optoPlate_stats
+clearvars -except measurements LED optoPlate_stats units
