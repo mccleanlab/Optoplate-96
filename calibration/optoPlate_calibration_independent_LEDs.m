@@ -3,7 +3,7 @@
 % LEDs, and calculates calibration values such that each LED is equally
 % bright. When executed, this script will prompt users to load all
 % measurements for a given calibration round. Relevent information
-% describing these measurements may have should be included in the
+% describing these measurements should be included in the
 % measurements' filenames as follows:
 %
 %   WELLS01 | WELLS02 : indicates set of wells measured
