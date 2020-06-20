@@ -17,14 +17,14 @@ void LED_init()
 
     for (uint8_t i = 0; i < NUMB_WELLS; i++)
     {
-            // Load calibration values from static memory
-            #if NUMB_WELL_LEDS < 3
-            calibrationValues[0][i] = EEPROM.read(i * 2 );
-            calibrationValues[1][i] = EEPROM.read(i * 2 + 1);
+// Load calibration values from static memory
+#if NUMB_WELL_LEDS < 3
+        calibrationValues[0][i] = EEPROM.read(i * 2);
+        calibrationValues[1][i] = EEPROM.read(i * 2 + 1);
 #else
-            calibrationValues[0][i] = EEPROM.read(i * 3 );
-            calibrationValues[1][i] = EEPROM.read(i * 3 + 1);
-            calibrationValues[3][i] = EEPROM.read(i * 3 + 2);
+        calibrationValues[0][i] = EEPROM.read(i * 3);
+        calibrationValues[1][i] = EEPROM.read(i * 3 + 1);
+        calibrationValues[3][i] = EEPROM.read(i * 3 + 2);
 #endif
         for (uint8_t led = 0; led < NUMB_WELL_LEDS; led++)
         {
@@ -48,7 +48,7 @@ uint8_t LED_updateGetIntensity(uint8_t led, uint8_t well)
     switch (pulseStates[led][well])
     {
     case P_START:
-        if (pulseTimeCounts[led][well] >= pgm_read_word_near(&pusleStartTimes[led][well]))
+        if (pulseTimeCounts[led][well] >= pgm_read_word_near(&(pusleStartTimes[led][well])))
         {
             pulseStates[led][well] = P_HIGH;
             pulseTimeCounts[led][well] = 0;
@@ -61,7 +61,7 @@ uint8_t LED_updateGetIntensity(uint8_t led, uint8_t well)
         break;
 
     case P_HIGH:
-        if (pulseTimeCounts[led][well] >= pgm_read_word_near(&pulseHighTimes[led][well]))
+        if (pulseTimeCounts[led][well] >= pgm_read_word_near(&(pulseHighTimes[led][well])))
         {
             pulseStates[led][well] = P_LOW;
             pulseTimeCounts[led][well] = 0;
@@ -72,7 +72,7 @@ uint8_t LED_updateGetIntensity(uint8_t led, uint8_t well)
             switch (subpulseStates[led][well])
             {
             case SP_HIGH:
-                if (subpulseTimeCounts[led][well] >= pgm_read_word_near(&subpulseHighTimes[led][well]))
+                if (subpulseTimeCounts[led][well] >= pgm_read_word_near(&(subpulseHighTimes[led][well])))
                 {
                     subpulseStates[led][well] = SP_LOW;
                     subpulseTimeCounts[led][well] = 0;
@@ -83,7 +83,7 @@ uint8_t LED_updateGetIntensity(uint8_t led, uint8_t well)
                 }
                 break;
             case SP_LOW:
-                if (subpulseTimeCounts[led][well] >= pgm_read_word_near(&subpulseLowTimes[led][well]))
+                if (subpulseTimeCounts[led][well] >= pgm_read_word_near(&(subpulseLowTimes[led][well])))
                 {
                     subpulseStates[led][well] = SP_HIGH;
                     subpulseTimeCounts[led][well] = 0;
@@ -96,11 +96,11 @@ uint8_t LED_updateGetIntensity(uint8_t led, uint8_t well)
         break;
 
     case P_LOW:
-        if (pulseTimeCounts[led][well] >= pgm_read_word_near(&pulseLowTimes[led][well]))
+        if (pulseTimeCounts[led][well] >= pgm_read_word_near(&(pulseLowTimes[led][well])))
         {
             pulseCounts[led][well]++;
             pulseTimeCounts[led][well] = 0;
-            if (pulseCounts[led][well] >= pgm_read_word_near(&pulseNumbs[led][well]))
+            if (pulseCounts[led][well] >= pgm_read_word_near(&(pulseNumbs[led][well])))
             {
                 pulseStates[led][well] = DONE;
             }
@@ -131,5 +131,5 @@ uint8_t LED_updateGetIntensity(uint8_t led, uint8_t well)
 
 uint16_t calibrateIntensity(uint8_t led, uint8_t well, uint8_t intensity)
 {
-    return ((uint16_t)(intensity)*calibrationValues[led][well]) / 16;
+    return ((uint16_t)intensity*(uint16_t)calibrationValues[led][well]) / 16;
 }
