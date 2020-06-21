@@ -1,7 +1,7 @@
 #include <Arduino.h>
-#include "TLC5947_optoPlate.h"
 #include "experiment_config.h"
 #include "LED.h"
+#include "TLC5947_optoPlate.h"
 
 //define number of LED drivers and assign microcontroller
 #define NUM_TLC5974 12
@@ -19,20 +19,17 @@ bool needLedSetup = false;
 
 void setLED(uint8_t led, uint16_t well, uint16_t intensity)
 {
-  tlc.setPWM((uint16_t)((int)(well / 12) + 8 * (well % 12)), intensity);
-  switch (led)
+  if (led == 0)
   {
-  case 0:
     tlc.setPWM((uint16_t)((int)(well / 12) + 8 * (well % 12)), intensity);
-    break;
-  case 1:
+  }
+  else if (led == 1)
+  {
     tlc.setPWM((uint16_t)(well + 192), intensity);
-    break;
-  case 2:
+  }
+  else if (led == 2)
+  {
     tlc.setPWM((uint16_t)((int)(well / 12) + 8 * (well % 12) + 96), intensity);
-    break;
-  default:
-    break;
   }
 }
 
@@ -58,8 +55,8 @@ void setup()
   for (uint16_t i = 0; i < NUMB_WELLS; i++)
   {
 #if NUMB_WELL_LEDS < 3
-  //  setLED(0, i, 0);
-  //  setLED(1, i, 0);
+    setLED(0, i, 50);
+    setLED(1, i, 0);
 #endif
 #if NUMB_WELL_LEDS == 3
     setLED(0, i, 0);
@@ -90,14 +87,14 @@ void setup()
   TCCR1B |= (1 << CS12) | (1 << CS10);
   // enable timer compare interrupt
   TIMSK1 |= (1 << OCIE1A);
-  //sei();
+  sei();
 }
 
 void loop()
 {
-  Serial.print("intens:");
   if (newSecond)
   {
+    
     // Set new values on LEDs
     tlc.write();
     needLedSetup = true;
@@ -107,20 +104,22 @@ void loop()
   {
     // Prepare values for next second
     needLedSetup = false;
+
     for (uint8_t i = 0; i < NUMB_WELLS; i++)
     {
 
 #if NUMB_WELL_LEDS == 1
-      uint8_t intensity = LED_updateGetIntensity(1, i);
+      uint8_t intensity = LED_updateGetIntensity(0, i);
       setLED(0, i, calibrateIntensity(0, i, intensity));
       setLED(1, i, calibrateIntensity(1, i, intensity));
+      
 #endif
 #if NUMB_WELL_LEDS == 2
       uint8_t intensity = LED_updateGetIntensity(0, i);
-      uint16_t intens = calibrateIntensity(0, i, intensity);
-      setLED(0, i, intens);
-      intensity = LED_updateGetIntensity(1, i);
-      setLED(1, i, calibrateIntensity(1, i, intensity));
+      //uint16_t intens = calibrateIntensity(0, i, intensity);
+      setLED(0, i, 50);
+      //intensity = LED_updateGetIntensity(1, i);
+      //setLED(1, i, calibrateIntensity(1, i, intensity));
 #endif
 #if NUMB_WELL_LEDS == 3
       uint8_t intensity = LED_updateGetIntensity(0, i);
@@ -131,5 +130,6 @@ void loop()
       setLED(2, i, calibrateIntensity(2, i, intensity));
 #endif
     }
+    
   }
 }
