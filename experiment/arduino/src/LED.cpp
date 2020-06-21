@@ -5,6 +5,7 @@ uint8_t calibrationValues[2][NUMB_WELLS];
 #else
 uint8_t calibrationValues[3][NUMB_WELLS];
 #endif
+
 pulseState pulseStates[NUMB_WELL_LEDS][NUMB_WELLS];   // The current state of the LED
 uint16_t pulseCounts[NUMB_WELL_LEDS][NUMB_WELLS];     // Number of pulses that have been looped through
 uint16_t pulseTimeCounts[NUMB_WELL_LEDS][NUMB_WELLS]; // Time in seconds since start of high phase of pulse or low phase of pulse
@@ -14,33 +15,32 @@ uint16_t subpulseTimeCounts[NUMB_WELL_LEDS][NUMB_WELLS];  // Time in seconds sin
 
 void LED_init()
 {
-
-    for (uint8_t i = 0; i < NUMB_WELLS; i++)
+    for (uint8_t well = 0; well < NUMB_WELLS; well++)
     {
 // Load calibration values from static memory
 #if NUMB_WELL_LEDS < 3
-        calibrationValues[0][i] = EEPROM.read(i * 2);
-        calibrationValues[1][i] = EEPROM.read(i * 2 + 1);
+        calibrationValues[0][well] = EEPROM.read(well * 2);
+        calibrationValues[1][well] = EEPROM.read(well * 2 + 1);
 #else
-        calibrationValues[0][i] = EEPROM.read(i * 3);
-        calibrationValues[1][i] = EEPROM.read(i * 3 + 1);
-        calibrationValues[3][i] = EEPROM.read(i * 3 + 2);
+        calibrationValues[0][well] = EEPROM.read(well * 3);
+        calibrationValues[1][well] = EEPROM.read(well * 3 + 1);
+        calibrationValues[2][well] = EEPROM.read(well * 3 + 2);
 #endif
         for (uint8_t led = 0; led < NUMB_WELL_LEDS; led++)
         {
 
             // Initiate state machine
-            pulseStates[led][i] = P_START;
-            pulseCounts[led][i] = 0;
-            pulseTimeCounts[led][i] = 0;
+            pulseStates[led][well] = P_START;
+            pulseCounts[led][well] = 0;
+            pulseTimeCounts[led][well] = 0;
 
-            subpulseStates[led][i] = SP_HIGH;
-            subpulseTimeCounts[led][i] = 0;
+            subpulseStates[led][well] = SP_HIGH;
+            subpulseTimeCounts[led][well] = 0;
         }
     }
 }
 
-uint8_t LED_updateGetIntensity(uint8_t led, uint8_t well)
+uint8_t LED_updateGetIntensity(const uint8_t led, const uint8_t well)
 {
     bool ledHigh = false;
     pulseTimeCounts[led][well]++;
@@ -121,7 +121,7 @@ uint8_t LED_updateGetIntensity(uint8_t led, uint8_t well)
 
     if (ledHigh)
     {
-        return pgm_read_byte_near(&(amplitudes[led][well]));
+        return (uint8_t)pgm_read_byte_near(&amplitudes[led][well]);
     }
     else
     {

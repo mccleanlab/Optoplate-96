@@ -27,7 +27,7 @@ typedef enum subPulseState_e
 void LED_init();
 
 // Increments the LED time and return the values from 0 to 255 for the one LED
-uint8_t LED_updateGetIntensity(uint8_t led, uint8_t well);
+uint8_t LED_updateGetIntensity(const uint8_t led, const uint8_t well);
 
 // Takes in a intensity value and ajustes it with a calibration value
 // well - a number from 0 to 95 representing the well,
