@@ -29,7 +29,7 @@ class Adafruit_TLC5947
 public:
   Adafruit_TLC5947(uint8_t n, uint8_t c, uint8_t d, uint8_t l);
 
-  boolean begin(void);
+  bool begin(void);
 
   void setPWM(uint16_t chan, uint16_t pwm);
   void setLED(uint8_t lednum, uint16_t r, uint16_t g, uint16_t b);

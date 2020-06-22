@@ -40,18 +40,14 @@ void Adafruit_TLC5947::write(void)
     for (int8_t b = 11; b >= 0; b--)
     {
       digitalWrite(_clk, LOW);
-
       if (pwmbuffer[c] & (1 << b))
         digitalWrite(_dat, HIGH);
       else
         digitalWrite(_dat, LOW);
-
       digitalWrite(_clk, HIGH);
     }
   }
-
   digitalWrite(_clk, LOW);
-
   digitalWrite(_lat, HIGH);
   digitalWrite(_lat, LOW);
 }
