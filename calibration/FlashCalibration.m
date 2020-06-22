@@ -2,7 +2,7 @@
 %% Load calibration file
 [file, path] = uigetfile('.mat','Select calibration data');
 
-calibrationData = load([path file]);
+calibration_data = load([path file]);
 
 
 fileID = fopen('arduino/src/calibration_config.h','w');
@@ -19,7 +19,7 @@ fprintf(fileID, 'const uint8_t calibration_data[96][%i] = {\n', numb_leds);
 for i = (1:96)
     fprintf(fileID, '\t{');
     for led = 1:numb_leds
-        fprintf(fileID, '%4i,',  calibrationData.cal(i, led));
+        fprintf(fileID, '%4i,',  calibration_data.cal(i, led));
     end
     fprintf(fileID, '},\n');
 end
