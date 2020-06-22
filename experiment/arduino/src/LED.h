@@ -12,16 +12,11 @@ Finite state machine for the LEDs. Also handels the calibration values of the LE
 typedef enum pulseState_e
 {
     P_START,
-    P_HIGH,
+    P_HIGH_SP_HIGH,
+    P_HIGH_SP_LOW,
     P_LOW,
     DONE
 } pulseState;
-
-typedef enum subPulseState_e
-{
-    SP_HIGH,
-    SP_LOW,
-} subPulseState;
 
 // Initializes the LEDs, assumes EEPROM has been flashed with calibration values
 void LED_init();
@@ -33,6 +28,6 @@ uint8_t LED_updateGetIntensity(const uint8_t led, const uint8_t well);
 // well - a number from 0 to 95 representing the well,
 // led - the index of the LED in the well
 // intensity_p -  light intenisty of the LED, from 0 to 255
-uint16_t calibrateIntensity(uint8_t led, uint8_t well, uint8_t intensity);
+uint16_t calibrateIntensity(const uint8_t led, const uint8_t well, const uint8_t intensity);
 
 #endif
