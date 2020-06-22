@@ -5,13 +5,13 @@
 
 //define number of LED drivers and assign microcontroller
 
-#define NUM_TLC5974 12
+#define NUM_TLC5947 12
 #define DATA_PIN 4
 #define CLK_PIN 5
 #define LATCH_PIN 6
 #define OUTPUT_EN 7 // set to -1 to not use the enable pin (its optional)
 
-Adafruit_TLC5947 tlc = Adafruit_TLC5947(NUM_TLC5974, CLK_PIN, DATA_PIN, LATCH_PIN); //creates LED driver object
+Adafruit_TLC5947 tlc = Adafruit_TLC5947(NUM_TLC5947, CLK_PIN, DATA_PIN, LATCH_PIN); //creates LED driver object
 
 bool needLedSetup = false;
 
@@ -36,7 +36,6 @@ bool newSecond = false;
 
 void init1HzTimer()
 {
-#ifdef MICRO
   //Set up 1hz interrupt timer
   cli(); //stop interrupts
   //set timer1 interrupt at 1Hz
@@ -52,34 +51,13 @@ void init1HzTimer()
   // enable timer compare interrupt
   TIMSK1 |= (1 << OCIE1A);
   sei();
-#endif
-#ifdef NUCLEO
-  //RCC->APB2ENR |= RCC_APB2ENR_IOPAEN | RCC_APB2ENR_IOPCEN;
-  RCC->APB1ENR |= RCC_APB1ENR_TIM7EN; //(uint32_t)1 << 4;   //clock enable
-
-  TIM7->DIER |= TIM_DIER_UIE; //int. enable
-  TIM7->PSC = 0xFFFF;         //prescaler for TIM7. -> clk = 1Mz/2^16 = 2^4 =16Hz
-  TIM7->ARR = 1;              // int. flag every sec.
-  TIM7->CR1 |= TIM_CR1_CEN;
-
-  NVIC_EnableIRQ(TIM7_IRQn); // Enable interrupt from TIM3 (NVIC level)
-#endif
 }
 
-// Timer interrupt functions
-#ifdef MICRO
 ISR(TIMER1_COMPA_vect)
 {
   newSecond = true;
 }
-#endif
-#ifdef NUCLEO
-void TIM7_DAC_IRQHandler(void)
-{
-  newSecond = true;
-  TIM7->SR &= ~TIM_SR_UIF; //UIF (Interrupt flag) disabled
-}
-#endif
+
 void setup()
 {
   LED_init();
@@ -94,8 +72,8 @@ void setup()
   for (uint16_t i = 0; i < NUMB_WELLS; i++)
   {
 #if NUMB_WELL_LEDS < 3
-    setLED(0, i, 50);
-    setLED(1, i, 50);
+    setLED(0, i, 0);
+    setLED(1, i, 0);
 #endif
 #if NUMB_WELL_LEDS == 3
     setLED(0, i, 0);
@@ -119,7 +97,6 @@ void loop()
 
   if (newSecond)
   {
-    Serial.println("Hei!");
     // Set new values on LEDs
     tlc.write();
     needLedSetup = true;
