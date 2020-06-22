@@ -10,8 +10,6 @@ uint16_t pulseCounts[NUMB_WELL_LEDS][NUMB_WELLS];     // Number of pulses that h
 uint16_t pulseTimeCounts[NUMB_WELL_LEDS][NUMB_WELLS]; // Time in seconds since start of high phase of pulse or low phase of pulse
 
 subPulseState subpulseStates[NUMB_WELL_LEDS][NUMB_WELLS]; // Number of subpulses in pulse that have been looped through
-uint16_t subpulseTimeCounts[NUMB_WELL_LEDS][NUMB_WELLS];  // Time in seconds since start of high phase of subpulse or low phase of subpulse
-
 void LED_init()
 {
     for (uint8_t well = 0; well < NUMB_WELLS; well++)
@@ -34,7 +32,6 @@ void LED_init()
             pulseTimeCounts[led][well] = 0;
 
             subpulseStates[led][well] = SP_HIGH;
-            subpulseTimeCounts[led][well] = 0;
         }
     }
 }
@@ -53,7 +50,6 @@ uint8_t LED_updateGetIntensity(const uint8_t led, const uint8_t well)
             pulseTimeCounts[led][well] = 0;
 
             subpulseStates[led][well] = SP_HIGH;
-            subpulseTimeCounts[led][well] = 0;
 
             ledHigh = true;
         }
@@ -67,14 +63,14 @@ uint8_t LED_updateGetIntensity(const uint8_t led, const uint8_t well)
         }
         else
         {
-            subpulseTimeCounts[led][well]++;
+            uint16_t spHighTime = pgm_read_word_near(&(subpulseHighTimes[led][well]));
+            uint16_t spLowTime = pgm_read_word_near(&(subpulseLowTimes[led][well]));
             switch (subpulseStates[led][well])
             {
             case SP_HIGH:
-                if (subpulseTimeCounts[led][well] >= pgm_read_word_near(&(subpulseHighTimes[led][well])))
+                if (pulseTimeCounts[led][well] % (spHighTime + spLowTime) == spHighTime)
                 {
                     subpulseStates[led][well] = SP_LOW;
-                    subpulseTimeCounts[led][well] = 0;
                 }
                 else
                 {
@@ -82,11 +78,9 @@ uint8_t LED_updateGetIntensity(const uint8_t led, const uint8_t well)
                 }
                 break;
             case SP_LOW:
-                if (subpulseTimeCounts[led][well] >= pgm_read_word_near(&(subpulseLowTimes[led][well])))
+                if (pulseTimeCounts[led][well] % (spHighTime + spLowTime) == 0)
                 {
                     subpulseStates[led][well] = SP_HIGH;
-                    subpulseTimeCounts[led][well] = 0;
-
                     ledHigh = true;
                 }
                 break;
@@ -107,8 +101,6 @@ uint8_t LED_updateGetIntensity(const uint8_t led, const uint8_t well)
             {
                 pulseStates[led][well] = P_HIGH;
                 subpulseStates[led][well] = SP_HIGH;
-                subpulseTimeCounts[led][well] = 0;
-
                 ledHigh = true;
             }
         }
