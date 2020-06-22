@@ -1,6 +1,5 @@
 #include "LED.h"
-
-#if NUMB_WELL_LEDS <= 2
+#if NUMB_WELL_LEDS < 3
 uint8_t calibrationValues[2][NUMB_WELLS];
 #else
 uint8_t calibrationValues[3][NUMB_WELLS];
@@ -17,7 +16,7 @@ void LED_init()
 {
     for (uint8_t well = 0; well < NUMB_WELLS; well++)
     {
-// Load calibration values from static memory
+
 #if NUMB_WELL_LEDS < 3
         calibrationValues[0][well] = EEPROM.read(well * 2);
         calibrationValues[1][well] = EEPROM.read(well * 2 + 1);
@@ -131,5 +130,5 @@ uint8_t LED_updateGetIntensity(const uint8_t led, const uint8_t well)
 
 uint16_t calibrateIntensity(uint8_t led, uint8_t well, uint8_t intensity)
 {
-    return ((uint16_t)intensity*(uint16_t)calibrationValues[led][well]) / 16;
+    return ((uint16_t)intensity * (uint16_t)calibrationValues[led][well]) / 16;
 }

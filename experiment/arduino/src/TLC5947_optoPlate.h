@@ -19,6 +19,10 @@
 #define _ADAFRUIT_TLC5947_H
 
 #include <Arduino.h>
+#include "experiment_config.h"
+
+
+#define BUFF_SIZE 24 * 12 // The number of output pins times the number of TLC5947s 
 
 class Adafruit_TLC5947
 {
@@ -30,7 +34,8 @@ public:
   void setPWM(uint16_t chan, uint16_t pwm);
   void setLED(uint8_t lednum, uint16_t r, uint16_t g, uint16_t b);
   void write(void);
-  uint16_t pwmbuffer[24*12];
+
+  uint16_t pwmbuffer[BUFF_SIZE];
 
 private:
   uint8_t numdrivers, _clk, _dat, _lat;

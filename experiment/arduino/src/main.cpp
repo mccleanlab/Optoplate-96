@@ -4,14 +4,12 @@
 #include "TLC5947_optoPlate.h"
 
 //define number of LED drivers and assign microcontroller
+
 #define NUM_TLC5974 12
 #define DATA_PIN 4
 #define CLK_PIN 5
 #define LATCH_PIN 6
 #define OUTPUT_EN 7 // set to -1 to not use the enable pin (its optional)
-
-//DO NOT CHANGE
-const int chanNum = 24 * NUM_TLC5974; //number of channels
 
 Adafruit_TLC5947 tlc = Adafruit_TLC5947(NUM_TLC5974, CLK_PIN, DATA_PIN, LATCH_PIN); //creates LED driver object
 
@@ -36,43 +34,9 @@ void setLED(uint8_t led, uint16_t well, uint16_t intensity)
 // True every second
 bool newSecond = false;
 
-ISR(TIMER1_COMPA_vect)
+void init1HzTimer()
 {
-  newSecond = true;
-}
-
-void setup()
-{
-  LED_init();
-
-  Serial.begin(9600);
-
-  tlc.begin();
-
-  delay(100);
-
-  // Trun off all LEDs
-  for (uint16_t i = 0; i < NUMB_WELLS; i++)
-  {
-#if NUMB_WELL_LEDS < 3
-    setLED(0, i, 50);
-    setLED(1, i, 0);
-#endif
-#if NUMB_WELL_LEDS == 3
-    setLED(0, i, 0);
-    setLED(1, i, 0);
-    setLED(2, i, 0);
-#endif
-  }
-
-  // Turn off all LEDs
-  if (OUTPUT_EN >= 0)
-  {
-    pinMode(OUTPUT_EN, OUTPUT);
-    digitalWrite(OUTPUT_EN, HIGH);
-  }
-  tlc.write();
-
+#ifdef MICRO
   //Set up 1hz interrupt timer
   cli(); //stop interrupts
   //set timer1 interrupt at 1Hz
@@ -88,13 +52,74 @@ void setup()
   // enable timer compare interrupt
   TIMSK1 |= (1 << OCIE1A);
   sei();
+#endif
+#ifdef NUCLEO
+  //RCC->APB2ENR |= RCC_APB2ENR_IOPAEN | RCC_APB2ENR_IOPCEN;
+  RCC->APB1ENR |= RCC_APB1ENR_TIM7EN; //(uint32_t)1 << 4;   //clock enable
+
+  TIM7->DIER |= TIM_DIER_UIE; //int. enable
+  TIM7->PSC = 0xFFFF;         //prescaler for TIM7. -> clk = 1Mz/2^16 = 2^4 =16Hz
+  TIM7->ARR = 1;              // int. flag every sec.
+  TIM7->CR1 |= TIM_CR1_CEN;
+
+  NVIC_EnableIRQ(TIM7_IRQn); // Enable interrupt from TIM3 (NVIC level)
+#endif
+}
+
+// Timer interrupt functions
+#ifdef MICRO
+ISR(TIMER1_COMPA_vect)
+{
+  newSecond = true;
+}
+#endif
+#ifdef NUCLEO
+void TIM7_DAC_IRQHandler(void)
+{
+  newSecond = true;
+  TIM7->SR &= ~TIM_SR_UIF; //UIF (Interrupt flag) disabled
+}
+#endif
+void setup()
+{
+  LED_init();
+
+  Serial.begin(9600);
+
+  tlc.begin();
+
+  delay(100);
+
+  // Trun off all LEDs
+  for (uint16_t i = 0; i < NUMB_WELLS; i++)
+  {
+#if NUMB_WELL_LEDS < 3
+    setLED(0, i, 50);
+    setLED(1, i, 50);
+#endif
+#if NUMB_WELL_LEDS == 3
+    setLED(0, i, 0);
+    setLED(1, i, 0);
+    setLED(2, i, 0);
+#endif
+  }
+
+  // Turn off all LEDs
+  if (OUTPUT_EN >= 0)
+  {
+    pinMode(OUTPUT_EN, OUTPUT);
+    digitalWrite(OUTPUT_EN, HIGH);
+  }
+  tlc.write();
+  init1HzTimer();
 }
 
 void loop()
 {
+
   if (newSecond)
   {
-    
+    Serial.println("Hei!");
     // Set new values on LEDs
     tlc.write();
     needLedSetup = true;
@@ -112,14 +137,13 @@ void loop()
       uint8_t intensity = LED_updateGetIntensity(0, i);
       setLED(0, i, calibrateIntensity(0, i, intensity));
       setLED(1, i, calibrateIntensity(1, i, intensity));
-      
+
 #endif
 #if NUMB_WELL_LEDS == 2
       uint8_t intensity = LED_updateGetIntensity(0, i);
-      //uint16_t intens = calibrateIntensity(0, i, intensity);
-      setLED(0, i, 50);
-      //intensity = LED_updateGetIntensity(1, i);
-      //setLED(1, i, calibrateIntensity(1, i, intensity));
+      setLED(0, i, calibrateIntensity(0, i, intensity));
+      intensity = LED_updateGetIntensity(1, i);
+      setLED(1, i, calibrateIntensity(1, i, intensity));
 #endif
 #if NUMB_WELL_LEDS == 3
       uint8_t intensity = LED_updateGetIntensity(0, i);
@@ -130,6 +154,5 @@ void loop()
       setLED(2, i, calibrateIntensity(2, i, intensity));
 #endif
     }
-    
   }
 }

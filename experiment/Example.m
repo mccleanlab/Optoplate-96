@@ -13,6 +13,9 @@ for k = 1:2
     end
 end
 
+amplitudes= ones(2, 8, 12)*10; % Turn every other LED on
+
+
 % Loop through the pulses 5 times
 pulse_numbs = ones(2, 8, 12)* 5; 
 % Wait 2 sec before starting pulse sequence

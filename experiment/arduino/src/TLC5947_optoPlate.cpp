@@ -24,14 +24,17 @@ Adafruit_TLC5947::Adafruit_TLC5947(uint8_t n, uint8_t c, uint8_t d, uint8_t l)
   _dat = d;
   _lat = l;
 
+  for (uint16_t i = 0; i < BUFF_SIZE; i++)
+  {
+    pwmbuffer[i] = 0;
+  }
   //pwmbuffer = (uint16_t *)calloc(2, 24 * n);
 }
 
 void Adafruit_TLC5947::write(void)
 {
   digitalWrite(_lat, LOW);
-  // 24 channels per TLC5974
-  for (int16_t c = 24 * numdrivers - 1; c >= 0; c--)
+  for (int16_t c = BUFF_SIZE - 1; c >= 0; c--)
   {
     // 12 bits per channel, send MSB first
     for (int8_t b = 11; b >= 0; b--)
@@ -46,6 +49,7 @@ void Adafruit_TLC5947::write(void)
       digitalWrite(_clk, HIGH);
     }
   }
+
   digitalWrite(_clk, LOW);
 
   digitalWrite(_lat, HIGH);
@@ -56,7 +60,7 @@ void Adafruit_TLC5947::setPWM(uint16_t chan, uint16_t pwm)
 {
   if (pwm > 4095)
     pwm = 4095;
-  if (chan > 24 * numdrivers)
+  if (chan >= BUFF_SIZE)
     return;
   pwmbuffer[chan] = pwm;
 }
@@ -70,8 +74,6 @@ void Adafruit_TLC5947::setLED(uint8_t lednum, uint16_t r, uint16_t g, uint16_t b
 
 boolean Adafruit_TLC5947::begin()
 {
-  if (!pwmbuffer)
-    return false;
 
   pinMode(_clk, OUTPUT);
   pinMode(_dat, OUTPUT);
