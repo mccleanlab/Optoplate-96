@@ -1,10 +1,13 @@
-% This file creates a checker pattern that stays on for 10 seconds, off for
-% 1 second, and repeats this 5 times.
+%% Example - OptoPlate
+% This code provide an example on how to create a experiment file for the
+% OptoPlate configured with LEDs of one color.
+
 addpath('visualization');
 
 subPulses = false; % Enable/disable subpulses
 
-amplitudes= zeros(8, 12); % Turn every other LED on
+% Set a nonzero amplitude on every other LED
+amplitudes= zeros(8, 12);
 for i = 1:8
    for j = 1:12
        amplitudes(i, j) = mod(i+j, 2)*20;
@@ -17,8 +20,8 @@ pulse_numbs = ones(8, 12)* 5;
 pusle_start_times = ones(8, 12)*2;
 % Let LED be high for 10 seconds
 pulse_high_times = ones(8, 12)*10;
-% Pause for 1 second between each pulse
-pulse_low_times = ones(8, 12)*1;
+% Pause for 4 second between each pulse
+pulse_low_times = ones(8, 12)*4;
 
 if subPulses
     % During LED high time, let the LED be on for 1 sec and off for 2 sec
