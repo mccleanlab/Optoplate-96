@@ -13,7 +13,7 @@ led_numb =  size(experiment.amplitudes, 1);
 % Create header file
 fileID = fopen('arduino/src/experiment_config.h','w');
 
-fprintf(fileID,'/* This is an auto generated file.\nGenerated using ../Matlab/FlashExperiment.m */\n\n');
+fprintf(fileID,'/* This is an automatically generated file.\nGenerated using ../Matlab/FlashExperiment.m */\n\n');
 
 % Tell the compiler to only include the header file once
 fprintf(fileID,'#ifndef _EXPERIMENT_CONFIG_H\n#define _EXPERIMENT_CONFIG_H\n\n');
