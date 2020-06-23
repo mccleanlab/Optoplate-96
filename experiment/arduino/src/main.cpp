@@ -9,12 +9,13 @@
 #define DATA_PIN 4
 #define CLK_PIN 5
 #define LATCH_PIN 6
-#define OUTPUT_EN 7 // set to -1 to not use the enable pin (its optional)
+#define OUTPUT_EN 7
 
 Adafruit_TLC5947 tlc = Adafruit_TLC5947(NUM_TLC5947, CLK_PIN, DATA_PIN, LATCH_PIN); //creates LED driver object
 
 bool needLedSetup = false;
 
+// Wrights the intensities to a buffer in tlc, to flash the values to the LEDs tlc.wright must be called 
 void setLED(uint8_t led, uint16_t well, uint16_t intensity)
 {
   if (led == 0)
@@ -60,15 +61,16 @@ ISR(TIMER1_COMPA_vect)
 
 void setup()
 {
+  // Set up LED state machine
   LED_init();
-
+  
   Serial.begin(9600);
 
   tlc.begin();
 
   delay(100);
 
-  // Trun off all LEDs
+  // Turn off all LEDs
   for (uint16_t i = 0; i < NUMB_WELLS; i++)
   {
 #if NUMB_WELL_LEDS < 3
@@ -82,7 +84,6 @@ void setup()
 #endif
   }
 
-  // Turn off all LEDs
   if (OUTPUT_EN >= 0)
   {
     pinMode(OUTPUT_EN, OUTPUT);
@@ -104,19 +105,21 @@ void loop()
   }
   else if (needLedSetup)
   {
-    // Prepare values for next second
+    // Run the state machine for all the LED and prepare the new intensities to be flashed in the new second
     needLedSetup = false;
 
     for (uint8_t i = 0; i < NUMB_WELLS; i++)
     {
 
 #if NUMB_WELL_LEDS == 1
+      // When only 1 color of LED is used the two LED in a well share the same LED state machine
       uint8_t intensity = LED_updateGetIntensity(0, i);
       setLED(0, i, calibrateIntensity(0, i, intensity));
       setLED(1, i, calibrateIntensity(1, i, intensity));
 
 #endif
 #if NUMB_WELL_LEDS == 2
+      // When multiple colors of LED are used they get their own state machine
       uint8_t intensity = LED_updateGetIntensity(0, i);
       setLED(0, i, calibrateIntensity(0, i, intensity));
       intensity = LED_updateGetIntensity(1, i);
