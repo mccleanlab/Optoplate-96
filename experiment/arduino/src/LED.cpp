@@ -4,6 +4,7 @@ pulseState pulseStates[NUMB_WELL_LEDS][NUMB_WELLS];   // The current state of th
 uint16_t pulseCounts[NUMB_WELL_LEDS][NUMB_WELLS];     // Number of pulses that have been looped through
 uint16_t pulseTimeCounts[NUMB_WELL_LEDS][NUMB_WELLS]; // Time in seconds since start of high phase of pulse or low phase of pulse
 
+// Reads the EEPROM and returns the calibration value
 uint8_t getCalibrationValue(uint8_t led, uint8_t well)
 {
 #if NUMB_WELL_LEDS < 3
@@ -31,12 +32,11 @@ uint8_t LED_updateGetIntensity(const uint8_t led, const uint8_t well)
 {
     bool ledHigh = false;
     pulseTimeCounts[led][well]++;
-
     switch (pulseStates[led][well])
     {
     case P_START:
         if (pulseTimeCounts[led][well] >= pgm_read_word_near(&(pusleStartTimes[led][well])))
-        {
+        {   
             pulseStates[led][well] = P_HIGH_SP_HIGH;
             pulseTimeCounts[led][well] = 0;
 
