@@ -12,7 +12,7 @@ fprintf(fileID,'/* This is an auto generated file.\nFind the generator in ../Mat
 fprintf(fileID,'#ifndef _CALIBRATION_CONFIG_H\n#define _CALIBRATION_CONFIG_H\n\n');
 fprintf(fileID,'#include <Arduino.h>\n\n');
 
-numb_leds = size(calibration_data, 2);
+numb_leds = size(calibration_data.cal, 2);
 
 fprintf(fileID, 'const uint8_t calibration_data[96][%i] = {\n', numb_leds);
 
