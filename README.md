@@ -6,6 +6,7 @@ This repository was created to provide these features for the optoPlate-96:
 - Functionality for calibration of the light intensities of the LEDs.
 - Supports two levels of pulses to reduce the risk of phototoxicity.
 - Visualisaztion of light patterns before an experiment.
+- MultiColor LED support
 
 ## Installation:
 
@@ -30,8 +31,8 @@ Create the following matrices:
 - pusle_start_times [8 by 12 matrix of unsigned 16 bit integer] - time in seconds before sequence of pulses starts
 - pulse_high_times [8 by 12 matrix of unsigned 16 bit integer] - time in seconds for high phase of pulse
 - pulse_low_times [8 by 12 matrix of unsigned 16 bit integer] - time in seconds for low phase of pulse
-- subpulse_high_times [8 by 12 matrix of unsigned 16 bit integer] - time in seconds for high phase of subpulse
-- subpulse_low_times [8 by 12 matrix of unsigned 16 bit integer] - time in seconds for low phase of subpulse
+- (optional) subpulse_high_times [8 by 12 matrix of unsigned 16 bit integer] - time in seconds for high phase of subpulse
+- (optional) subpulse_low_times [8 by 12 matrix of unsigned 16 bit integer] - time in seconds for low phase of subpulse
 Each cell in the matrices corresponds to a light well on the OptoPlate. For example, (1,1) is well A01 and (8,12) is well H12
 ![Timing Diagram](https://github.com/EdvardGrodem/Optoplate-96/blob/master/timingDiagram.png)
 Create and save an experiment file by calling the function experiment/createExperiment.m
