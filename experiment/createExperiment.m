@@ -1,6 +1,9 @@
 %% createExperiment
 %   creates a .mat file with experiment data that can be flashed by
-%   FlashExperiment.m. Also returns the experiment
+%   FlashExperiment.m. Also returns the experiment. n is the number of
+%   individual LEDs on the OptoPlate. If only 1 color is used, 2
+%   dimensional can be used, if 2 or 3 colors is used all the matrixes must
+%   3 dimensional. 
 % Function configurations
 %   - createExperiment(amplitudes, pulse_numbs, pusle_start_times,
 %   pulse_high_times, pulse_low_times) - Create experiment with only one level of pulses
@@ -10,19 +13,19 @@
 %   subpulse_low_times) - Create experiment with two levle of pulses
 %
 % Parameters
-% - amplitudes [8 by 12 matrix of unsigned 8 bit integer] - light intensity of
+% - amplitudes [(n by) 8 by 12 matrix of unsigned 8 bit integer] - light intensity of
 %       each LED, 255 - max light intensity and 0 - no light
-% - pulse_numbs [8 by 12 matrix of unsigned 16 bit integer] - number of pulses
+% - pulse_numbs [(n by) 8 by 12 matrix of unsigned 16 bit integer] - number of pulses
 %       for each LED
-% - pusle_start_times [8 by 12 matrix of unsigned 16 bit integer] - time in
+% - pusle_start_times [(n by) 8 by 12 matrix of unsigned 16 bit integer] - time in
 %       seconds before sequence of pulses starts
-% - pulse_high_times [8 by 12 matrix of unsigned 16 bit integer] - time in
+% - pulse_high_times [(n by) 8 by 12 matrix of unsigned 16 bit integer] - time in
 %       seconds for high phase of pulse
-% - pulse_low_times [8 by 12 matrix of unsigned 16 bit integer] - time in
+% - pulse_low_times [(n by) 8 by 12 matrix of unsigned 16 bit integer] - time in
 %       seconds for low phase of pulse
-% - subpulse_high_times [8 by 12 matrix of unsigned 16 bit integer] - time in
+% - subpulse_high_times [(n by) 8 by 12 matrix of unsigned 16 bit integer] - time in
 %       seconds for high phase of subpulse
-% - subpulse_low_times [8 by 12 matrix of unsigned 16 bit integer] - time in
+% - subpulse_low_times [(n by) 8 by 12 matrix of unsigned 16 bit integer] - time in
 %       seconds for low phase of subpulse
 function experiment = createExperiment(varargin)
     switch length(varargin)
@@ -52,7 +55,7 @@ function experiment = createExperiment(varargin)
     if(ismatrix(experiment.amplitudes))
         multi_led = false;
         for k=1:numel(fn)
-            experiment.(fn{k}) = {experiment.(fn{k})};
+            experiment.(fn{k}) = reshape(experiment.(fn{k}), [1, 8, 12]);
         end
     end
     led_numb = size(experiment.amplitudes, 1);
