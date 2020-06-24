@@ -3,13 +3,14 @@
 % LEDs, and calculates calibration values such that each LED is equally
 % bright. When executed, this script will prompt users to load all
 % measurements for a given calibration round. Relevent information
-% describing these measurements may have should be included in the
+% describing these measurements should be included in the
 % measurements' filenames as follows:
 %
 %   WELLS01 | WELLS02 : indicates set of wells measured
 %                       eg, CHECKER01 or CHECKER02 patterns
 %
-%   LED01 | LED02 | LED00: indicates if left, right, or both LEDs measured
+%   LED01...LED0*: indicates LED measured, 
+%                  set to LED00 if all LEDs measured simultaneously
 %
 %   ROUND01 ... ROUND0*: indicates curret calibration round
 %                       omit ROUND label to measure only (no calibration)
@@ -25,15 +26,21 @@
 % A01 are inactive).
 %
 % This script generates three primary tables:
-%   measurements: all irradaince measurement (mapped to well or not) LED:
-%   single irradiance measurement per LED optoPlate_stats: overall
-%   optoPlate statitics (irradiance mean, CV, etc)
-
+%   measurements: all irradiance measurements (mapped to well or not) 
+%
+%   LED: single irradiance measurement per LED 
+%
+%   optoPlate_stats: overall optoPlate statitics (irradiance mean, CV, etc)
+%
 % This script exports the following files:
 %   measurements_*.mat: contains three primary tables (see above)
 %
 %   cal_round_*.mat: calibration values for round * which can be
 %                    subsequently flashed to optoPlate to calibrate
+%
+%   cal_96_round*_LED*.csv: optionally export .csv file with 8 x 12 matrix
+%                           of calibration values for each LED set if
+%                           export_cal_96==true
 %
 %   intesities_round_*.fig: scatterplot of irradiance measurements per LED
 %                           for round *
@@ -53,7 +60,6 @@
 %
 % Written by Kieran Sweeney and Edvard Groedem, UW-Madison, 2020
 
-
 %% Set parameters
 clearvars; clc; close all;
 amp_thresh = 0.025; % Fraction of max intensity threshold for segmenting wells
@@ -61,7 +67,9 @@ min_peak_dist = 2; % Minimum number of samples between peaks
 num_wells = 48; % Number of wells in each power meter measurements file
 unit_scale = 1E6; % Scale intensity values (eg, to convert from W to µW)
 units = 'µW/cm^2'; % Only sets units labels on figures
-plot_measurements_raw = true;
+plot_measurements_raw = true; % Plot raw measurements with well IDs
+calibrate_LEDs_independently = false; % Set to true if using multiple LED colors
+export_cal_96 = false; % Set to true to export 8 x 12 matrix of calibration values for each LED set
 
 %% Load files to analyze
 [filenames, path] = uigetfile('.csv','Select files','Multiselect','On');
@@ -88,17 +96,15 @@ well_map(1:2:end,:) = flip(well_map(1:2:end,:),2);
 well_list = reshape(well_map',96,1);
 
 %% Reconstruct LED intensities from power meter timeseries measurements
-close all
-measurements = {};
+measurements = cell(nFiles,1);
 cmap = lines(num_wells);
 
 for f = 1:nFiles
-    
     file = filenames{f};
     
     % Search filename for LED, well set, and round info
     if contains(file,'LED')
-        LED = regexp(file,'LED01|LED02|LED00','match');
+        LED = regexp(file,'LED\d*','match');
         LED = regexp(LED,'\d*','match');
         LED = str2double(LED{:});
     else
@@ -144,27 +150,19 @@ for f = 1:nFiles
     intensity(intensity<amp_thresh*max(intensity)) = nan;
     
     % Create binary intensity signal for peak finding
-    npad = 5;
-    intensity_binary = zeros(length(intensity),1);
+    intensity_binary = zeros(length(intensity)+1,1); % Zero pad end
     intensity_binary(intensity>0) = 1;
-    if intensity_binary(end)>amp_thresh
-        intensity_binary(end-1:end) = 0;
-    end
-    
-    %     figure; plot(time,intensity_binary)
     
     % Find and count peaks in masked signal to identify wells
     [pks, locs, width] = findpeaks(intensity_binary,'NPeaks',num_wells,'MinPeakDistance',min_peak_dist,'MinPeakProminence',1); % Find peaks from binary
     locs = locs + floor(width/2); % Center peaks
     [val,idx] = min(abs(time-locs));
     well_idx = time(idx)';
-        
+    
     % Show warning if incorrect number of wells found
     if numel(pks)~=num_wells
         disp(['Warning: ' num2str(numel(pks)) ' peaks detected'])
     end
-    
-    %     intensity_binary = intensity_binary(1:end-npad);
     
     % Calculate intensities for each identified well (excludes outliers)
     for j = 1:num_wells
@@ -218,7 +216,6 @@ if plot_measurements_raw==true
     g.update('color',cellstr(measurements.well),'subset',~isnan(measurements.intensity));
     g.geom_point();
     g.set_color_options('map',cmap);
-    g.axe_property('YLim',[0 300]);
     g.set_names('x','Time','y','Intensity (µW/cm^2)','color','','row','');
     g.no_legend();
     g.draw(); hold on
@@ -246,22 +243,21 @@ if cal_round~=0 % Calculate calibration values
     % Interleave LED intensities following 96 well layout
     maxCal = 255;
     
-    % Format intensities for optoPlate
-    intensities(:,1) = LED.intensity(LED.LED==1);
-    intensities(:,2) = LED.intensity(LED.LED==2);
+    % Format intensities for optoPlate and display
+    intensities = zeros(96,max(LED.LED));
+    intensities_96_well = zeros(8,12,max(LED.LED));
     
-    % Format intensities for display
-    intensities_display(1:2:191) = intensities(:,1);
-    intensities_display(2:2:192) = intensities(:,2);
-    intensities_display = reshape(intensities_display,24,8)';
-    
-    % Scale intensities by calibration values from previous round (if
-    % applicable)
+    for n = 1:max(LED.LED)
+        intensities(:,n) = LED.intensity(LED.LED==n);
+        intensities_96_well(:,:,n) = reshape(intensities(:,n),12,8)';
+    end
+       
+    % Scale intensities by calibration values from previous round (if applicable)
     if cal_round == 1
         intensities_round_1 = intensities;
         save([path 'intensities_round_1'],'intensities_round_1');
-        cal_previous = ones([96, 2])*255;
-        minIntensity = min(intensities(:));
+        cal_previous = ones([96, max(LED.LED)])*255;
+        
         a = 1;
     else
         % Load previous values
@@ -270,34 +266,43 @@ if cal_round~=0 % Calculate calibration values
         
         intensities_round_1 = load([path 'intensities_round_1']);
         intensities_round_1 = intensities_round_1.intensities_round_1;
-        minIntensity = min(intensities_round_1(:));
+        
         a = 0.6;
     end
     
+    % Get min intensity for all LEDs or each LED set
+    if calibrate_LEDs_independently==false
+        min_intensity = min(intensities_round_1(:));
+    else
+        min_intensity = min(intensities_round_1);
+    end
+    
     % Calculate calibration values
-    cal = cal_previous/maxCal - a*(intensities - minIntensity)./intensities_round_1;
+    cal = cal_previous/maxCal - a*(intensities - min_intensity)./intensities_round_1;
     cal = round(cal*maxCal);
     
     cal(cal>255) = 255;
     cal(cal<0) = 0;
     
-    % Reformat calibration values for display
-    cal_display(1:2:191) = cal(:,1);
-    cal_display(2:2:192) = cal(:,2);
-    cal_display = reshape(cal_display,24,8)';
+    % Reformat calibration values for display and .csv export (optional)
+    cal_96_well = zeros(8,12,max(LED.LED));
+    for n = 1:max(LED.LED)
+        cal_96_well(:,:,n) = reshape(cal(:,n),12,8)';
+        if export_cal_96==true
+          writematrix(cal_96_well(:,:,n),[path 'cal_96_round_' num2str(cal_round) '_LED_' num2str(n) '.csv']);
+        end
+    end
     
     % Save calibration values
     save([path 'cal_round_' num2str(cal_round)],'cal');
 end
 
+
 %% Plot
 if cal_round==0
     % Plot LED intensities
     clear g; figure('Position',[100 100 1200 800])
-    
-    %     ymax = 1.25*max(LED.intensity);
-    ymax = 350;
-    
+    ymax = 1.25*max(LED.intensity);
     g = gramm('x',cellstr(LED.well),'y',LED.intensity,...
         'color',cellstr(regexp(LED.well,'[a-zA-Z]*','match')),'subset',~isnan(LED.intensity));
     g.facet_grid(LED.LED,[]);
@@ -307,37 +312,38 @@ if cal_round==0
     g.draw();
     
 elseif cal_round~=0
-    % Create heatmap labels
-    clear g; figure('Position',[100 100 1200 800])
-    %     ymax = 1.25*max(LED.intensity);
-    ymax = 120;
+    % Create row labels
     rowlist = 'A':'H';
-    column_list = string(cellfun(@(x) sprintf('%02d',x),num2cell(1:12),'UniformOutput',false));
-    xlabeldisp(1:2:23) = string(1:12);
-    xlabeldisp(2:2:24) = repmat("",1,12);
     
     % Create heatmap of intensities following 96-well layout
-    subplot(2,1,1);
-    h = heatmap(intensities_display);
-    h.YDisplayLabels = cellstr(rowlist(:));
-    h.XDisplayLabels = xlabeldisp;
-    h.Title = ['Mean LED intensity (' units ')'];
+    figure('Name','Measurements (96 well format)','Position',[100 100 1200 800])
+    for n = 1:max(LED.LED)
+        subplot(max(LED.LED),1,n);
+        h = heatmap(intensities_96_well(:,:,n));
+        h.YDisplayLabels = cellstr(rowlist(:));
+        h.XDisplayLabels = string(1:12);
+        h.Title = ['Mean intensity round ' num2str(cal_round) ' LED ' num2str(n) ' (' units ')'];
+    end
     
     % Create heatmap of calibration values following 96-well layout
-    subplot(2,1,2);
-    h = heatmap(cal_display);
-    h.YDisplayLabels = cellstr(rowlist(:));
-    h.XDisplayLabels = xlabeldisp;
-    h.Title = ['Calibration values: round ' num2str(cal_round)];
-    savefig(gcf,[path 'heatmap_round_' num2str(cal_round)]);
+    figure('Name','Calibration values','Position',[100 100 1200 800])
+    for n = 1:max(LED.LED)
+        subplot(max(LED.LED),1,n);
+        h = heatmap(cal_96_well(:,:,n));
+        h.YDisplayLabels = cellstr(rowlist(:));
+        h.XDisplayLabels = string(1:12);
+        h.Title = ['Calibration values round ' num2str(cal_round) ' LED ' num2str(n)];
+        savefig(gcf,[path 'heatmap_round_' num2str(cal_round)]);
+    end
     
     % Plot LED intensities
-    clear g; figure
+    clear g; figure('Name','Measurements','Position',[100 100 1200 800])
+    ymax = 1.25*max(LED.intensity);
     g = gramm('x',cellstr(LED.well),'y',LED.intensity,...
         'color',cellstr(regexp(LED.well,'[a-zA-Z]*','match')),'subset',~isnan(LED.intensity));
     g.facet_grid(LED.LED,[]);
     g.geom_point();
-    g.set_title(['LED intensities: round ' num2str(cal_round)]);
+    g.set_title(['LED intensities round ' num2str(cal_round)]);
     g.axe_property('XTickLabelRotation',60,'YLim',[0 ymax],'Xlim',[0 97]);
     g.set_text_options('font','arial','interpreter','tex','base_size',6);
     g.set_names('x','Well','y', ['Intensity (' units ')' newline 'mean ± std'],'Row','LED','Color','Row');
@@ -369,4 +375,4 @@ if cal_round~=0
 end
 
 %% Clean up
-clearvars -except measurements LED optoPlate_stats units
+clearvars -except measurements_out measurements LED optoPlate_stats cal_96 units
