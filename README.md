@@ -7,7 +7,7 @@ This repository was created to provide these features for the optoPlate-96:
 - Supports two levels of pulses to reduce the risk of phototoxicity.
 - Visualisaztion of light patterns before an experiment.
 - MultiColor LED support
-
+- Support for turning on and off LED from a connected computer for microscope imagining
 ## Installation:
 
 - Install MATLAB
@@ -38,4 +38,7 @@ Each cell in the matrices corresponds to a light well on the OptoPlate. For exam
 Create and save an experiment file by calling the function experiment/createExperiment.m
 Make sure the OptoPlate is connected to the computer via an USB cable. Run the script experiment/FlashExperiment.m and select the experiment file.
 The experiment will start immediately and will continue as long as the Arduino on the OptoPlate has power either through the USB cable or the 7V input. If power is cut to the Arduino, the experiment will reset. The experiment will also reset if the reset button on the Arduino is pressed.
+
+## UART communication
+Each well of the OptoPlate can be turned on and off by sending a UART message from the computer. This feature was added to support imagining with a microscope during an experiment. A detaljed description of how this works and a uart driver is provided in the folder OptoPlateDriver.
 
