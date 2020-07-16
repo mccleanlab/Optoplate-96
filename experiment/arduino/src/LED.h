@@ -30,4 +30,16 @@ uint8_t LED_updateGetIntensity(const uint8_t led, const uint8_t well);
 // intensity_p -  light intenisty of the LED, from 0 to 255
 uint16_t calibrateIntensity(const uint8_t led, const uint8_t well, const uint8_t intensity);
 
+
+// LED will be truned off
+void LED_disable(const uint8_t led, const uint8_t well);
+
+// LED will be truned on
+void LED_enable(const uint8_t led, const uint8_t well);
+
+
+void LED_wellDisable(const uint8_t well);
+
+void LED_wellEnable(const uint8_t well);
+
 #endif

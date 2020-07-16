@@ -13,7 +13,16 @@
 
 Adafruit_TLC5947 tlc = Adafruit_TLC5947(NUM_TLC5947, CLK_PIN, DATA_PIN, LATCH_PIN); //creates LED driver object
 
+
+// True every second
+bool newSecond = false;
+
+
 bool needLedSetup = false;
+
+#define BUFF_SIZE 64
+uint8_t TF_buff[BUFF_SIZE];
+uint8_t numBytes;
 
 // Wrights the intensities to a buffer in tlc, to flash the values to the LEDs tlc.wright must be called 
 void setLED(uint8_t led, uint16_t well, uint16_t intensity)
@@ -31,9 +40,6 @@ void setLED(uint8_t led, uint16_t well, uint16_t intensity)
     tlc.setPWM((uint16_t)((int)(well / 12) + 8 * (well % 12) + 96), intensity);
   }
 }
-
-// True every second
-bool newSecond = false;
 
 void init1HzTimer()
 {
@@ -135,4 +141,30 @@ void loop()
 #endif
     }
   }
+
+  // Read Serial and update the TinyFrame listener
+  numBytes = Serial.available();
+  if(numBytes > 0) {
+    for (uint8_t n = 0; n < numBytes; n++) {
+     uint8_t byte = Serial.read();
+     uint8_t well= byte & 0x7F;
+     if( (byte & 0x80) > 0) {
+       LED_wellEnable(well);
+     } else
+     {
+       LED_wellDisable(well);
+      #if NUMB_WELL_LEDS == 1 || NUMB_WELL_LEDS == 2
+        setLED(0, well, 0);
+        setLED(1, well, 0);
+      #endif
+      #if NUMB_WELL_LEDS == 3
+        setLED(0, well, 0);
+        setLED(1, well, 0);
+        setLED(2, well, 0);
+      #endif
+     }
+    }
+    tlc.write();
+  }
+  
 }
