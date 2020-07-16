@@ -10,12 +10,12 @@ subPulses = false; % Enable/disable subpulses
 amplitudes= zeros(8, 12);
 for i = 1:8
    for j = 1:12
-       amplitudes(i, j) = mod(i+j, 2)*20;
+       amplitudes(i, j) = 10; %mod(i+j, 2)*20;
    end
 end
 
 % Loop through the pulses 5 times
-pulse_numbs = ones(8, 12)* 5; 
+pulse_numbs = ones(8, 12)* 200; 
 % Wait 2 sec before starting pulse sequence
 pusle_start_times = ones(8, 12)*2;
 % Let LED be high for 10 seconds
