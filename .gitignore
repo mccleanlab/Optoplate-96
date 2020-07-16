@@ -71,3 +71,8 @@ calibration/OptoPlate2_independent/ROUND02_LED03_WELLS01.csv
 calibration/OptoPlate2_independent/ROUND02_LED03_WELLS02.csv
 calibration/OptoPlate2_independent/UNCALIBRATED_WELLS01.csv
 calibration/OptoPlate2_independent/UNCALIBRATED_WELLS02.csv
+OptoPlateDriver/OptoPlate/OptoPlateDriver.exp
+OptoPlateDriver/OptoPlate/OptoPlateDriver.ilk
+OptoPlateDriver/OptoPlate/OptoPlateDriver.lib
+OptoPlateDriver/OptoPlate/OptoPlateDriver.pdb
+OptoPlateDriver/OptoPlateDriver/OptoPLate.cpp
