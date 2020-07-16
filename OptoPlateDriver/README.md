@@ -23,7 +23,7 @@ int main() {
    return 1;
 }
 ```
-To change the index to be enable/diable while running a JOB module insert a Expression block. By opening the box you will get a list of all the variables used by the JOB module. The desired variable can then be used as parameter in the functions OptoPlateDiable(int) and OptoPlateEnable(int). A simple example is provided in Optoplate-96/OptoPlateDriver/example    
+To change the index to be enable/diable while running a JOB module insert a Expression block. By opening the box you will get a list of all the variables used by the JOB module. The desired variable can then be used as parameter in the functions OptoPlateDiable(int) and OptoPlateEnable(int). A simple example is provided in Optoplate-96/OptoPlateDriver/NISexample    
 
 ## Help on implementation of custom driver
 The OptoPlate accepts 1 byte messages over the Arduino Serial (UART) connection to the computer. The most significant bit is the enable/disable bit, the remaning 7 bits are the 0-indexed index of the well. For instance, by sending 0b0000 0010 over Serial, well A3 will turn off and 0b1000 1100 will enable enable well B1
