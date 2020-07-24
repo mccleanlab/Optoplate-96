@@ -33,89 +33,86 @@ void LED_init()
 
 uint8_t LED_updateGetIntensity(const uint8_t led, const uint8_t well)
 {
-    if(enabled[led][well]) {
-        bool ledHigh = false;
-        pulseTimeCounts[led][well]++;
-        switch (pulseStates[led][well])
-        {
-        case P_START:
-            if (pulseTimeCounts[led][well] >= pgm_read_word_near(&(pusleStartTimes[led][well])))
-            {   
-                pulseStates[led][well] = P_HIGH_SP_HIGH;
-                pulseTimeCounts[led][well] = 0;
 
-                ledHigh = true;
-            }
-            break;
+    bool ledHigh = false;
+    pulseTimeCounts[led][well]++;
+    switch (pulseStates[led][well])
+    {
+    case P_START:
+        if (pulseTimeCounts[led][well] >= pgm_read_word_near(&(pusleStartTimes[led][well])))
+        {   
+            pulseStates[led][well] = P_HIGH_SP_HIGH;
+            pulseTimeCounts[led][well] = 0;
 
-        case P_HIGH_SP_HIGH:
-            if (pulseTimeCounts[led][well] >= pgm_read_word_near(&(pulseHighTimes[led][well])))
-            {
-                pulseStates[led][well] = P_LOW;
-                pulseTimeCounts[led][well] = 0;
-            }
-            else
-            {
-                uint16_t spHighTime = pgm_read_word_near(&(subpulseHighTimes[led][well]));
-                uint16_t spLowTime = pgm_read_word_near(&(subpulseLowTimes[led][well]));
-                if (pulseTimeCounts[led][well] % (spHighTime + spLowTime) == spHighTime)
-                {
-                    pulseStates[led][well] = P_HIGH_SP_LOW;
-                }
-                else
-                {
-                    ledHigh = true;
-                }
-            }
-            break;
-        case P_HIGH_SP_LOW:
-            if (pulseTimeCounts[led][well] >= pgm_read_word_near(&(pulseHighTimes[led][well])))
-            {
-                pulseStates[led][well] = P_LOW;
-                pulseTimeCounts[led][well] = 0;
-            }
-            else
-            {
-                uint16_t spHighTime = pgm_read_word_near(&(subpulseHighTimes[led][well]));
-                uint16_t spLowTime = pgm_read_word_near(&(subpulseLowTimes[led][well]));
-                if (pulseTimeCounts[led][well] % (spHighTime + spLowTime) == 0)
-                {
-                    pulseStates[led][well] = P_HIGH_SP_HIGH;
-                    ledHigh = true;
-                }
-            }
-            break;
-
-        case P_LOW:
-            if (pulseTimeCounts[led][well] >= pgm_read_word_near(&(pulseLowTimes[led][well])))
-            {
-                pulseCounts[led][well]++;
-                pulseTimeCounts[led][well] = 0;
-                if (pulseCounts[led][well] >= pgm_read_word_near(&(pulseNumbs[led][well])))
-                {
-                    pulseStates[led][well] = DONE;
-                }
-                else
-                {
-                    pulseStates[led][well] = P_HIGH_SP_HIGH;
-                    ledHigh = true;
-                }
-            }
-            break;
-
-        case DONE:
-            break;
+            ledHigh = true;
         }
+        break;
 
-        if (ledHigh)
+    case P_HIGH_SP_HIGH:
+        if (pulseTimeCounts[led][well] >= pgm_read_word_near(&(pulseHighTimes[led][well])))
         {
-            return (uint8_t)pgm_read_byte_near(&amplitudes[led][well]);
+            pulseStates[led][well] = P_LOW;
+            pulseTimeCounts[led][well] = 0;
         }
         else
         {
-            return 0;
+            uint16_t spHighTime = pgm_read_word_near(&(subpulseHighTimes[led][well]));
+            uint16_t spLowTime = pgm_read_word_near(&(subpulseLowTimes[led][well]));
+            if (pulseTimeCounts[led][well] % (spHighTime + spLowTime) == spHighTime)
+            {
+                pulseStates[led][well] = P_HIGH_SP_LOW;
+            }
+            else
+            {
+                ledHigh = true;
+            }
         }
-    } else {
+        break;
+    case P_HIGH_SP_LOW:
+        if (pulseTimeCounts[led][well] >= pgm_read_word_near(&(pulseHighTimes[led][well])))
+        {
+            pulseStates[led][well] = P_LOW;
+            pulseTimeCounts[led][well] = 0;
+        }
+        else
+        {
+            uint16_t spHighTime = pgm_read_word_near(&(subpulseHighTimes[led][well]));
+            uint16_t spLowTime = pgm_read_word_near(&(subpulseLowTimes[led][well]));
+            if (pulseTimeCounts[led][well] % (spHighTime + spLowTime) == 0)
+            {
+                pulseStates[led][well] = P_HIGH_SP_HIGH;
+                ledHigh = true;
+            }
+        }
+        break;
+
+    case P_LOW:
+        if (pulseTimeCounts[led][well] >= pgm_read_word_near(&(pulseLowTimes[led][well])))
+        {
+            pulseCounts[led][well]++;
+            pulseTimeCounts[led][well] = 0;
+            if (pulseCounts[led][well] >= pgm_read_word_near(&(pulseNumbs[led][well])))
+            {
+                pulseStates[led][well] = DONE;
+            }
+            else
+            {
+                pulseStates[led][well] = P_HIGH_SP_HIGH;
+                ledHigh = true;
+            }
+        }
+        break;
+
+    case DONE:
+        break;
+    }
+
+    if (ledHigh && enabled[led][well])
+    {
+        return (uint8_t)pgm_read_byte_near(&amplitudes[led][well]);
+    }
+    else
+    {
         return 0;
     }
 }
