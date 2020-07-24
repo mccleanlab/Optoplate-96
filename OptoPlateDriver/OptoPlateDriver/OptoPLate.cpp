@@ -9,8 +9,13 @@ void readSerial(HANDLE  & hComm, char data[255], int & dLength);
 void closeSerial(HANDLE & hComm);
 void initSerial(HANDLE & hComm, const char * ComPortName);
 
+int OptoPlateConnect(int portNumber) {
+	std::string portName = std::string("COM") + std::to_string(portNumber);
+	initSerial(hComm, portName.c_str());
+	return 1;
+}
 
-int OptoPlateConnect() {
+int OptoPlateConnectAuto() {
 
 	std::string portName;
 

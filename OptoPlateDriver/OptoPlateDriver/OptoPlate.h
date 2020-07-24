@@ -12,7 +12,8 @@
     #define LUCIA_CALLBACK_API __declspec(dllimport)
 #endif
 
-extern "C" LUCIA_CALLBACK_API int OptoPlateConnect();
+extern "C" LUCIA_CALLBACK_API int OptoPlateConnect(int portNumber);
+extern "C" LUCIA_CALLBACK_API int OptoPlateConnectAuto();
 extern "C" LUCIA_CALLBACK_API int OptoPlateDisconnect();
 extern "C" LUCIA_CALLBACK_API int OptoPlateDisableLED(int LEDindex);
 extern "C" LUCIA_CALLBACK_API int OptoPlateEnableLED(int LEDindex);
