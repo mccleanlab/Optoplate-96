@@ -64,6 +64,29 @@ int OptoPlateEnableLED(int LEDindex) {
 	return 1;
 }
 
+int getNISindex(int LEDindex) {
+	int col = (LEDindex - 1) / 12;
+	int row = (LEDindex -1 ) % 12;
+	int NISLEDindex = 0;
+	if (col % 2 == 0) {
+		NISLEDindex = (col + 1) * 12 - row - 1;
+	}
+	else
+	{
+		NISLEDindex = LEDindex - 1;
+	}
+	return NISLEDindex;
+}
+
+int OptoPlateDisableLEDNIS(int LEDindex) {
+	OptoPlateDisableLED(getNISindex(LEDindex));
+	return 1;
+}
+int OptoPlateEnableLEDNIS(int LEDindex) {
+	OptoPlateEnableLED(getNISindex(LEDindex));
+	return 1;
+}
+
 
 void sendSerial(HANDLE  & hComm, char data[255], int dLength) {
     BOOL  Status;                          // Status of the various operations 

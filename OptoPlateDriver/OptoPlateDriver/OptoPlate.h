@@ -18,4 +18,7 @@ extern "C" LUCIA_CALLBACK_API int OptoPlateDisconnect();
 extern "C" LUCIA_CALLBACK_API int OptoPlateDisableLED(int LEDindex);
 extern "C" LUCIA_CALLBACK_API int OptoPlateEnableLED(int LEDindex);
 
+extern "C" LUCIA_CALLBACK_API int OptoPlateDisableLEDNIS(int LEDindex);
+extern "C" LUCIA_CALLBACK_API int OptoPlateEnableLEDNIS(int LEDindex);
+
 #endif //OPTOPLATE_H
