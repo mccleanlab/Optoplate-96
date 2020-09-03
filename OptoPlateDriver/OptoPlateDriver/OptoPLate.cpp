@@ -64,26 +64,19 @@ int OptoPlateEnableLED(int LEDindex) {
 	return 1;
 }
 
-int getNISindex(int LEDindex) {
-	int col = (LEDindex - 1) / 12;
-	int row = (LEDindex -1 ) % 12;
-	int NISLEDindex = 0;
-	if (col % 2 == 0) {
-		NISLEDindex = (col + 1) * 12 - row - 1;
-	}
-	else
-	{
-		NISLEDindex = LEDindex - 1;
-	}
-	return NISLEDindex;
+int getInvIndex(int LEDindex) {
+	int col = (LEDindex) / 12;
+	int row = (LEDindex) % 12;
+	int invLEDindex = (col + 1) * 12 - row-1;
+	return invLEDindex;
 }
 
-int OptoPlateDisableLEDNIS(int LEDindex) {
-	OptoPlateDisableLED(getNISindex(LEDindex));
+int OptoPlateDisableLEDinv(int LEDindex) {
+	OptoPlateDisableLED(getInvIndex(LEDindex));
 	return 1;
 }
-int OptoPlateEnableLEDNIS(int LEDindex) {
-	OptoPlateEnableLED(getNISindex(LEDindex));
+int OptoPlateEnableLEDinv(int LEDindex) {
+	OptoPlateEnableLED(getInvIndex(LEDindex));
 	return 1;
 }
 
