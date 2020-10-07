@@ -1,0 +1,12 @@
+
+experiment/arduino/src/experiment_config.h
+*.asv
+experiment/windows_driver/Build
+*.o
+*.a
+*.hex
+*.checksum
+*.dblite
+x64
+.vs
+
