@@ -3,8 +3,8 @@ This folder contains a driver written for use with the software NIS-elements AR.
 
 ## OptoPlate with NIS-elements AR
 The diver can be imported into NIS micro. 
-
-1. To enable NIS to import the driver, copy the folder Optoplate-96/OptoPlateDiver/OptoPlate to the NIS installation folder most likely located in C:/Program Files/NIS-Elements. When this is done you should have the following file strucure: C:/Program Files/NIS-Elements/OptoPlate/OptoPlateDriver.dll
+1. Visual Studio must be installed on the computer
+2. To enable NIS to import the driver, copy the folder Optoplate-96/OptoPlateDiver/OptoPlate to the NIS installation folder most likely located in C:/Program Files/NIS-Elements. When this is done you should have the following file strucure: C:/Program Files/NIS-Elements/OptoPlate/OptoPlateDriver.dll
 NIS Micros can now send commands to the OptoPlate. 
 
 The following example of a micro will connect to Serial Port 14 and turn off all the LEDs in well 15 (B3). 
