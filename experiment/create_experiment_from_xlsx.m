@@ -1,5 +1,6 @@
 clearvars; close all; clc
 addpath('visualization');
+flip_horizontal = true;
 
 %% Load xlsx file with optoPlate configuration
 [file, folder] =  uigetfile('.xlsx','Select plate map','MultiSelect','on');
@@ -10,10 +11,13 @@ opts.DataRange = 'A1';
 optoPlate_config = readtable([folder file], opts);
 
 % Loop through possible LEDs and get optoPlate configuration
-for n = 1:3    
+for n = 1:3
     % Get amplitudes
     [i,j] = find(strcmp(['LED' num2str(n) '_amplitudes'],optoPlate_config{:,:}));
     amplitudes_temp = str2double(optoPlate_config{(i+1:i+8),(j+1:j+12)});
+    if flip_horizontal==true
+        amplitudes_temp = fliplr(amplitudes_temp);
+    end
     if ~isnan(amplitudes_temp)
         amplitudes(n,:,:) = amplitudes_temp;
     end
@@ -21,6 +25,9 @@ for n = 1:3
     % Get pulse start times
     [i,j] = find(strcmp(['LED' num2str(n) '_pulse_start_times'],optoPlate_config{:,:}));
     pulse_start_times_temp = str2double(optoPlate_config{(i+1:i+8),(j+1:j+12)});
+    if flip_horizontal==true
+        pulse_start_times_temp = fliplr(pulse_start_times_temp);
+    end
     if ~isnan(pulse_start_times_temp)
         pulse_start_times(n,:,:) = pulse_start_times_temp;
     end
@@ -28,6 +35,9 @@ for n = 1:3
     % Get number of pulses
     [i,j] = find(strcmp(['LED' num2str(n) '_pulse_numbs'],optoPlate_config{:,:}));
     pulse_numbs_temps = str2double(optoPlate_config{(i+1:i+8),(j+1:j+12)});
+    if flip_horizontal==true
+        pulse_numbs_temps = fliplr(pulse_numbs_temps);
+    end
     if ~isnan(pulse_numbs_temps)
         pulse_numbs(n,:,:) = pulse_numbs_temps;
     end
@@ -35,6 +45,9 @@ for n = 1:3
     % Get pulse high times
     [i,j] = find(strcmp(['LED' num2str(n) '_pulse_high_times'],optoPlate_config{:,:}));
     pulse_high_times_temp = str2double(optoPlate_config{(i+1:i+8),(j+1:j+12)});
+    if flip_horizontal==true
+        pulse_high_times_temp = fliplr(pulse_high_times_temp);
+    end
     if ~isnan(pulse_high_times_temp)
         pulse_high_times(n,:,:) = pulse_high_times_temp;
     end
@@ -42,6 +55,9 @@ for n = 1:3
     % Get pulse low times
     [i,j] = find(strcmp(['LED' num2str(n) '_pulse_low_times'],optoPlate_config{:,:}));
     pulse_low_times_temp = str2double(optoPlate_config{(i+1:i+8),(j+1:j+12)});
+    if flip_horizontal==true
+        pulse_low_times_temp = fliplr(pulse_low_times_temp);
+    end
     if ~isnan(pulse_low_times_temp)
         pulse_low_times(n,:,:) = pulse_low_times_temp;
     end
@@ -49,6 +65,9 @@ for n = 1:3
     % Get subpulse high times
     [i,j] = find(strcmp(['LED' num2str(n) '_subpulse_high_times'],optoPlate_config{:,:}));
     subpulse_high_times_temp = str2double(optoPlate_config{(i+1:i+8),(j+1:j+12)});
+    if flip_horizontal==true
+        subpulse_high_times_temp = fliplr(subpulse_high_times_temp);
+    end
     if ~isnan(subpulse_high_times_temp)
         subpulse_high_times(n,:,:) = subpulse_high_times_temp;
     end
@@ -56,10 +75,14 @@ for n = 1:3
     % Get subpulse low times
     [i,j] = find(strcmp(['LED' num2str(n) '_subpulse_low_times'],optoPlate_config{:,:}));
     subpulse_low_times_temp = str2double(optoPlate_config{(i+1:i+8),(j+1:j+12)});
+    if flip_horizontal==true
+        subpulse_low_times_temp = fliplr(subpulse_low_times_temp);
+    end
     if ~isnan(subpulse_low_times_temp)
         subpulse_low_times(n,:,:) = subpulse_low_times_temp;
     end
 end
+
 
 %% Create and save experiment file from optoPlate configuration
 if exist('subpulse_high_times','var') == 1 && exist('subpulse_low_times','var') == 1 % Create experiment with subpulses
