@@ -6,11 +6,11 @@
 %   3 dimensional.
 % Function configurations
 %   - createExperiment(amplitudes, pulse_numbs, pusle_start_times,
-%   pulse_high_times, pulse_low_times) - Create experiment with only one level of pulses
+%   pulse_high_times, pulse_low_times, wait_for_signal[optional]) - Create experiment with only one level of pulses
 %
 %   - createExperiment(amplitudes, pulse_numbs, pusle_start_times,
 %   pulse_high_times, pulse_low_times, subpulse_high_times,
-%   subpulse_low_times) - Create experiment with two levle of pulses
+%   subpulse_low_times, wait_for_signal[optional]) - Create experiment with two levle of pulses
 %
 % Parameters
 % - amplitudes [(n by) 8 by 12 matrix of unsigned 8 bit integer] - light intensity of
@@ -27,7 +27,9 @@
 %       seconds for high phase of subpulse
 % - subpulse_low_times [(n by) 8 by 12 matrix of unsigned 16 bit integer] - time in
 %       seconds for low phase of subpulse
-
+% - wait_for_signal [boolean] - if set to true the OptoPlate will wait for the stating code 0xC4 
+%       to be sent over Serial before starting the experiment. A function
+%       that does this can be found in OptoPlateDriver
 
 
 function experiment = createExperiment(varargin)
@@ -44,7 +46,17 @@ switch length(varargin)
         experiment.pulse_low_times = varargin{5};
         experiment.subpulse_high_times = varargin{6};
         experiment.subpulse_low_times = varargin{7};
-        % Only pulses
+        experiment.wait_for_serial = false;
+    case 8
+        experiment.amplitudes= varargin{1};
+        experiment.pulse_numbs = varargin{2};
+        experiment.pulse_start_times = varargin{3};
+        experiment.pulse_high_times = varargin{4};
+        experiment.pulse_low_times = varargin{5};
+        experiment.subpulse_high_times = varargin{6};
+        experiment.subpulse_low_times = varargin{7};
+        experiment.wait_for_serial = varargin{8};
+    % Only pulses
     case 5
         experiment.amplitudes= varargin{1};
         experiment.pulse_numbs = varargin{2};
@@ -53,10 +65,21 @@ switch length(varargin)
         experiment.pulse_low_times = varargin{5};
         experiment.subpulse_high_times = varargin{4};
         experiment.subpulse_low_times = varargin{4};
+        experiment.wait_for_serial = false;
+    case 6
+        experiment.amplitudes= varargin{1};
+        experiment.pulse_numbs = varargin{2};
+        experiment.pulse_start_times = varargin{3};
+        experiment.pulse_high_times = varargin{4};
+        experiment.pulse_low_times = varargin{5};
+        experiment.subpulse_high_times = varargin{4};
+        experiment.subpulse_low_times = varargin{4};
+        experiment.wait_for_serial = varargin{6};
     otherwise
         error('Error: Invalid number of input parameters');
 end
-fn = fieldnames(experiment);
+fn = fieldnames(experiment); 
+fn(8) = [];%Test all parameres except for wait_for_serial
 multi_led = true;
 if(ismatrix(experiment.amplitudes))
     multi_led = false;

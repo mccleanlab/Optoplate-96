@@ -70,8 +70,15 @@ void setup()
   // Set up LED state machine
   LED_init();
   
-  Serial.begin(9600);
-
+  Serial.begin(115200);
+  // If connected to a PC wait for a caracter before continuing
+  delay(100);
+  #ifdef WAIT_FOR_SERIAL
+    while (Serial.read() != 196) {
+      delay(100);
+    }
+  #endif
+    
   tlc.begin();
 
   delay(100);

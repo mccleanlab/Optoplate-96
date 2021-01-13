@@ -1,7 +1,6 @@
 %% FlashExperiment
 % This script loads an experiment .mat file and will flash any available OptoPLate with the experiment.  
 
-% Load experiment
 [file, path] = uigetfile('experiment_files/*.mat','Select LED experiment file');
 
 experiment = load([path, file]);
@@ -21,6 +20,9 @@ fprintf(fileID,'#ifndef _EXPERIMENT_CONFIG_H\n#define _EXPERIMENT_CONFIG_H\n\n')
 fprintf(fileID,'#include "LED.h"\n#include <Arduino.h>\n\n');
 fprintf(fileID,'#define NUMB_WELL_LEDS %i\n', led_numb);
 fprintf(fileID,'#define NUMB_WELLS %i\n\n', 96);
+if(isfield(experiment, 'wait_for_serial') == true && experiment.wait_for_serial == true) 
+    fprintf(fileID, '#define WAIT_FOR_SERIAL\n\n');
+end
 
 % Save the experiment parameters as arrays PROGMEM to save memory
 fprintf(fileID, 'const uint8_t amplitudes[NUMB_WELL_LEDS][96] PROGMEM = {');
