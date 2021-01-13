@@ -78,11 +78,8 @@ void setup()
       delay(100);
     }
   #endif
-    
+  
   tlc.begin();
-
-  delay(100);
-
   // Turn off all LEDs
   for (uint16_t i = 0; i < NUMB_WELLS; i++)
   {
@@ -96,13 +93,13 @@ void setup()
     setLED(2, i, 0);
 #endif
   }
-
-  if (OUTPUT_EN >= 0)
+ tlc.write();
+ if (OUTPUT_EN >= 0)
   {
     pinMode(OUTPUT_EN, OUTPUT);
     digitalWrite(OUTPUT_EN, HIGH);
   }
-  tlc.write();
+  
   init1HzTimer();
 }
 
