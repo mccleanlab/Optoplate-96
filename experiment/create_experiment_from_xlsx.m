@@ -5,7 +5,7 @@ global xlsx_folder % Make global to send to uiputfile() in createExperiment()
 
 %% Flip wells along x-axis if mounting optoPlate upside-down on microscope
 flip_horizontal = true;
-wait_for_serial = true;
+wait_for_serial = false;
 
 %% Load xlsx file with optoPlate configuration
 [file, xlsx_folder] =  uigetfile('.xlsx','Select plate map','MultiSelect','on');
@@ -97,4 +97,4 @@ else % Create experiment without subpulses
 end
 
 %% Plot experiment
-plotLedGui(experiment);
+% plotLedGui(experiment);
