@@ -95,6 +95,3 @@ if exist('subpulse_high_times','var') == 1 && exist('subpulse_low_times','var') 
 else % Create experiment without subpulses
     experiment = createExperiment(amplitudes, pulse_numbs, pulse_start_times, pulse_high_times, pulse_low_times,wait_for_serial);
 end
-
-%% Plot experiment
-% plotLedGui(experiment);
