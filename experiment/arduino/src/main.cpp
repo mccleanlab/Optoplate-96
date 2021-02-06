@@ -164,8 +164,7 @@ void loop()
      uint8_t well= byte & 0x7F;
      if( byte == uint8_t(197)) {
        reboot();
-     }
-     if( (byte & 0x80) > 0) {
+     } else if( (byte & 0x80) > 0) {
        LED_wellEnable(well);
      } else
      {
