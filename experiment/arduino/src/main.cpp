@@ -13,12 +13,14 @@
 #define LATCH_PIN 6
 #define OUTPUT_EN 7
 
+#define START_CODE 225
+#define RESET_CODE 226
+
 Adafruit_TLC5947 tlc = Adafruit_TLC5947(NUM_TLC5947, CLK_PIN, DATA_PIN, LATCH_PIN); //creates LED driver object
 
 
 // True every second
 bool newSecond = false;
-
 
 bool needLedSetup = false;
 
@@ -84,7 +86,7 @@ void setup()
   // If connected to a PC wait for a caracter before continuing
   delay(100);
   #ifdef WAIT_FOR_SERIAL
-    while (Serial.read() != 196) {
+    while (Serial.read() != START_CODE) {
       delay(100);
     }
   #endif
@@ -162,7 +164,7 @@ void loop()
     for (uint8_t n = 0; n < numBytes; n++) {
      uint8_t byte = Serial.read();
      uint8_t well= byte & 0x7F;
-     if( byte == uint8_t(197)) {
+     if( byte == RESET_CODE) {
        reboot();
      } else if( (byte & 0x80) > 0) {
        LED_wellEnable(well);
