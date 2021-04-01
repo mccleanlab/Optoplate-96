@@ -1,8 +1,7 @@
-function data_out = get_led_patterns(experiment,flip_horizontal)
+function data_out = get_led_patterns(experiment,duration,flip_horizontal)
 
 % Assuming LED 1 and 2 are same, show only LED 1
 led = 1;
-duration = 160*60;
 
 % Get experiment parameters
 amplitudes = experiment.amplitudes;
