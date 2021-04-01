@@ -53,10 +53,18 @@ int OptoPlateDisconnect() {
 }
 
 int OptoPlateSignalStart() {
-	char buff = 196;
+	char buff = 225;
 	sendSerial(hComm, &buff, 1);
 	return 1;
 }
+
+int OptoPlateReset() {
+	char buff = 226;
+	sendSerial(hComm, &buff, 1);
+	return 1;
+}
+
+
 
 int OptoPlateDisableLED(int LEDindex) {
 	char buff = (char)LEDindex;
