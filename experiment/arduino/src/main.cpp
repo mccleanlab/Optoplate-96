@@ -3,6 +3,8 @@
 #include "LED.h"
 #include "TLC5947_optoPlate.h"
 
+#include <avr/wdt.h> // To reboot arduino
+
 //define number of LED drivers and assign microcontroller
 
 #define NUM_TLC5947 12
@@ -11,18 +13,28 @@
 #define LATCH_PIN 6
 #define OUTPUT_EN 7
 
+#define START_CODE 225
+#define RESET_CODE 226
+
 Adafruit_TLC5947 tlc = Adafruit_TLC5947(NUM_TLC5947, CLK_PIN, DATA_PIN, LATCH_PIN); //creates LED driver object
 
 
 // True every second
 bool newSecond = false;
 
-
 bool needLedSetup = false;
 
 #define BUFF_SIZE 64
 uint8_t TF_buff[BUFF_SIZE];
 uint8_t numBytes;
+
+// To restart the OptoPlate through serial
+void reboot() {
+  wdt_disable();
+  wdt_enable(WDTO_15MS);
+  while (1) {}
+}
+
 
 // Wrights the intensities to a buffer in tlc, to flash the values to the LEDs tlc.wright must be called 
 void setLED(uint8_t led, uint16_t well, uint16_t intensity)
@@ -70,12 +82,16 @@ void setup()
   // Set up LED state machine
   LED_init();
   
-  Serial.begin(9600);
-
-  tlc.begin();
-
+  Serial.begin(115200);
+  // If connected to a PC wait for a caracter before continuing
   delay(100);
-
+  #ifdef WAIT_FOR_SERIAL
+    while (Serial.read() != START_CODE) {
+      delay(100);
+    }
+  #endif
+  
+  tlc.begin();
   // Turn off all LEDs
   for (uint16_t i = 0; i < NUMB_WELLS; i++)
   {
@@ -89,13 +105,13 @@ void setup()
     setLED(2, i, 0);
 #endif
   }
-
-  if (OUTPUT_EN >= 0)
+ tlc.write();
+ if (OUTPUT_EN >= 0)
   {
     pinMode(OUTPUT_EN, OUTPUT);
     digitalWrite(OUTPUT_EN, HIGH);
   }
-  tlc.write();
+  
   init1HzTimer();
 }
 
@@ -148,7 +164,9 @@ void loop()
     for (uint8_t n = 0; n < numBytes; n++) {
      uint8_t byte = Serial.read();
      uint8_t well= byte & 0x7F;
-     if( (byte & 0x80) > 0) {
+     if( byte == RESET_CODE) {
+       reboot();
+     } else if( (byte & 0x80) > 0) {
        LED_wellEnable(well);
      } else
      {
