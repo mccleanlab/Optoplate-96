@@ -1,3 +1,42 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% This script loads .xlsx plate maps (see example_plate_map.xlsx)
+% containing LED parameters (amplitude, duration, etc.) for each well (or
+% LED) of the optoPlate and exports an experiment.mat file that can be
+% flashed to the optoPlate via a USB connection using FlashExperiment.m
+
+% This script is configured one to independently control up to 3 LEDs per
+% well. However, the McClean lab's optoPlates have only two LEDs per well,
+% both of which are blue so it doesn't make much sense to control them
+% independently. In this case, leave the parameters for LEDs 2 and 3 empty
+% (as shown in the included example_plate_map.xlsx) and it will use the
+% LED1 settings for both LED1 and LED2.
+
+% There are two important parameters in this script that should be set
+% appropriately for your experiment:
+
+% flip_horizontal:
+
+%   flip_horizontal==FALSE if mounting 96 well plate on top of optoPlate
+
+%   flip_horizontal==TRUE if mounting optoPlate upside-down on top of 96
+%   well plate, this flips the optoPlate LED parameters horizontally to
+%   match the layout of the 96 well plate (for using optoPlate on
+%   microscope)
+
+% wait_for_serial:
+
+%   If wait_for_serial==FALSE, light program (and optoPlate clock) starts
+%   once the onboard ***Arduino*** receives power. Set to FALSE for most
+%   experiments
+
+%   If wait_for_serial==TRUE, light program won't start until optoPlate
+%   receives a start command from a computer via USB. Use to sync optoPlate
+%   clock/experiment with microscope timelapse acquisition
+
+% Kieran Sweeney McClean Lab UW-Madison
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Setup
 clearvars; close all; clc
 addpath('visualization');
