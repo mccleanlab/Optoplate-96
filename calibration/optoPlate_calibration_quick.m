@@ -64,7 +64,7 @@
 clearvars; clc; close all;
 amp_thresh = 0.025; % Fraction of max intensity threshold for segmenting wells
 min_peak_dist = 2; % Minimum number of samples between peaks
-num_wells = 48; % Number of wells in each power meter measurements file
+num_wells = 96; % Number of wells in each power meter measurements file
 unit_scale = 1E6; % Scale intensity values (eg, to convert from W to µW)
 units = 'µW/cm^2'; % Only sets units labels on figures
 plot_measurements_raw = true; % Plot raw measurements with well IDs
@@ -111,10 +111,6 @@ for f = 1:nFiles
         LED = 0;
     end
     
-    well_set = regexp(file,'_WELLS\d*','match');
-    well_set = string(regexp(well_set,'\d*','match'));
-    well_set = str2double(well_set{:});
-    
     if contains(file,'ROUND')
         cal_round = regexp(file,'ROUND\d*_','match');
         cal_round = string(regexp(cal_round,'\d*','match'));
@@ -135,7 +131,6 @@ for f = 1:nFiles
     measurements_temp = table();
     measurements_temp.round(1:nSamples,1) = cal_round;
     measurements_temp.LED(1:nSamples,1) = LED;
-    measurements_temp.well_set(1:nSamples,1) = well_set;
     measurements_temp.sample(:,1) = (1:nSamples)';
     measurements_temp.intensity_raw(:,1) =  str2double(measurements_raw{:,6});
     
@@ -178,16 +173,10 @@ for f = 1:nFiles
     measurements_temp.intensity = intensity;
     measurements_temp.well_idx = well_idx;
     
-    % Assign well labels to temporary measurements table
-    if well_set==1
-        wells_used = well_list(2:2:end);
-    elseif well_set==2
-        wells_used = well_list(1:2:end);
-    end
-    
+    % Assign well labels to temporary measurements table  
     idx2well = table();
     idx2well.well_idx(1:num_wells,1) = 1:num_wells;
-    idx2well.well = wells_used;
+    idx2well.well = well_list;
     
     measurements_temp = join(measurements_temp,idx2well);
     measurements{f,1} = measurements_temp;
@@ -196,11 +185,11 @@ end
 % Concatenate and sort all temporary measurements into big table
 measurements = vertcat(measurements{:});
 measurements = sortrows(measurements,{'LED','well'},{'Ascend','Ascend'});
-return
+
 %% Plot measurements (for troubleshooting well IDs)
 if plot_measurements_raw==true
-    measurements.label = strcat("Well set ", num2str(measurements.well_set)," LED ", num2str(measurements.LED));
-    
+    measurements.label = strcat(" LED ", num2str(measurements.LED));
+
     cmap = hsv(12)*0.95;
     idx = randperm(12);
     cmap = cmap(idx,:); cmap = repmat(cmap,96/12,1);
@@ -375,4 +364,4 @@ if cal_round~=0
 end
 
 %% Clean up
-clearvars -except measurements_out measurements LED optoPlate_stats cal_96_well units
+% clearvars -except measurements_out measurements LED optoPlate_stats cal_96_well units
