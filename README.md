@@ -10,6 +10,8 @@ This repository was created to provide these features for the optoPlate-96:
 - Visualisaztion of light patterns before an experiment.
 - MultiColor LED support
 - Support for turning on and off LED from a connected computer for microscope imagining
+
+Machine learning scripts and data accompanying "Dynamic Multiplexed Control and Modeling of Optogenetic Systems Using the High-Throughput Optogenetic Platform, Lustro" (Harmer et al, BioRxiv 2023) can be found [here](https://github.com/zavalab/ML/tree/master/Optogenetics/)
 ## Installation:
 
 - Install MATLAB
