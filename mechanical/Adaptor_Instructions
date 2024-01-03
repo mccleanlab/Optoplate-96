@@ -1,0 +1,6 @@
+1. Place the bottom half of the 96 well plate adaptor over the optoPlate LEDs such that the tapered side of the adaptor faces down. 
+2. Place diffuser paper over the bottom half of the plate adaptor (optional)
+3. Place the top half of the inverted 96 well plate adaptor over the bottom half (and the diffuser paper), then secure all components together using nuts and bolts.
+
+Bottom half = OptoPlateAdapterToNunc265300_96_BottomHalf_Default.STL
+Top half = OptoPlateAdapterToNunc265300_96_Tophalf_Inverted.STL
