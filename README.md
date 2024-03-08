@@ -2,7 +2,7 @@
 This repository contains the code  to calibrate and operate the [optoPlate-96](https://www.bugajlab.com/optoplate-96) and is intended to accompany the following paper:
 E. O. S. Grødem, K. Sweeney, and M. N. McClean, “Automated calibration of optoPlate LEDs to reduce light dose variation in optogenetic experiments,” Biotechniques, vol. 69, no. 4, pp. 313–316, 2020.
 
-To construct the optoPlate, see the original repository for the optoPlate-96 that can be found [here](https://github.com/BugajLab/optoPlate-96/) (as described in Bugaj and Lim, "High-throughput multicolor optogenetics in microwell plates" _Nature Protocols_ 14(7):2205-2228.
+To construct the optoPlate, see the original repository for the optoPlate-96 that can be found [here](https://github.com/BugajLab/optoPlate-96/) (as described in Bugaj and Lim, "High-throughput multicolor optogenetics in microwell plates" _Nature Protocols_ 14(7):2205-2228).
 This repository was created to provide these features for the optoPlate-96:
 - MATLAB interface for operation of the optoPlate-96.
 - Functionality for calibration of the light intensities of the LEDs.
